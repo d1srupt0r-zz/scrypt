@@ -1,0 +1,6 @@
+c:\users\derekp\documents\visual studio 2013\Projects\scrypt\scrypt\bin\Debug\scrypt.exe.config
+c:\users\derekp\documents\visual studio 2013\Projects\scrypt\scrypt\bin\Debug\scrypt.exe
+c:\users\derekp\documents\visual studio 2013\Projects\scrypt\scrypt\bin\Debug\scrypt.pdb
+c:\users\derekp\documents\visual studio 2013\Projects\scrypt\scrypt\obj\Debug\scrypt.csprojResolveAssemblyReference.cache
+c:\users\derekp\documents\visual studio 2013\Projects\scrypt\scrypt\obj\Debug\scrypt.exe
+c:\users\derekp\documents\visual studio 2013\Projects\scrypt\scrypt\obj\Debug\scrypt.pdb
