@@ -11,7 +11,7 @@ namespace scrypt
         public static void Main(string[] args)
         {
             var output = new List<string>();
-            bool encode = false, decode = false, hash = false, verbose = false;
+            bool hash = false, verbose = false;
 
             try
             {
@@ -25,13 +25,11 @@ namespace scrypt
                         case "/e":
                         case "/encode":
                             output.Add(Encode(args[cmd.index + 1]));
-                            encode = true;
                             break;
 
                         case "/d":
                         case "/decode":
                             output.Add(Decode(args[cmd.index + 1]));
-                            decode = true;
                             break;
 
                         case "/h":
@@ -47,18 +45,22 @@ namespace scrypt
                 }
 
                 if (hash)
-                {
-                }
-
-                output.ForEach(Console.WriteLine);
-
-                if (verbose)
-                    Console.WriteLine("There are {0} results.", output.Count);
+                    output.ForEach(value => Cout(Hash(value), verbose));
+                else
+                    output.ForEach(value => Cout(value, verbose));
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
+        }
+
+        private static void Cout(string value, bool verbose)
+        {
+            if (verbose)
+                Console.WriteLine("{0} : {1}", value, value.Length);
+            else
+                Console.WriteLine(value);
         }
 
         private static string Decode(string value)
@@ -68,14 +70,14 @@ namespace scrypt
 
         private static string Encode(string value)
         {
-            return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value), Base64FormattingOptions.InsertLineBreaks);
+            return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value));
         }
 
-        private static byte[] Hash(string value)
+        private static string Hash(string value)
         {
             using (var sha1 = new SHA1Managed())
             {
-                return string.IsNullOrEmpty(value) ? null : sha1.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1);
+                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(sha1.ComputeHash(Encoding.ASCII.GetBytes(value), 0, value.Length - 1));
             }
         }
     }
