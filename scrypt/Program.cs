@@ -75,9 +75,9 @@ namespace scrypt
 
         private static string Hash(string value)
         {
-            using (var sha1 = new SHA1Managed())
+            using (var sha = new SHA1Managed())
             {
-                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(sha1.ComputeHash(Encoding.ASCII.GetBytes(value), 0, value.Length - 1));
+                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(sha.ComputeHash(Encoding.ASCII.GetBytes(value), 0, value.Length - 1));
             }
         }
     }
