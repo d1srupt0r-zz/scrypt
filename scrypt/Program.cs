@@ -50,6 +50,14 @@ namespace scrypt
                         case "/verbose":
                             verbose = true;
                             break;
+
+                        case "/f":
+                        case "/find":
+                            var input = args[cmd.index + 1];
+                            var search = Encode(input);
+                            var data = args[cmd.index + 2];
+                            output.Add(data.Replace(search, input));
+                            break;
                     }
                 }
 
