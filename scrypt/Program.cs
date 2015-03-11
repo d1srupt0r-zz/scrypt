@@ -20,10 +20,10 @@ namespace scrypt
 
             try
             {
-                var commands = args.Select((value, index) => new { value = args[index], index });
+                var commands = args.Select((value, index) => new { value = args[index], index }).ToList();
 
                 // empty commands
-                if (!commands.Any())
+                if (commands.Count == 0)
                     output.Add(Help);
 
                 // command parser
