@@ -50,14 +50,6 @@ namespace scrypt
                         case "/verbose":
                             verbose = true;
                             break;
-
-                        case "/f":
-                        case "/find":
-                            var input = args[cmd.index + 1];
-                            var search = Encode(input);
-                            var data = args[cmd.index + 2];
-                            output.Add(data.Replace(search, input));
-                            break;
                     }
                 }
 
@@ -80,14 +72,14 @@ namespace scrypt
                 Console.WriteLine(value);
         }
 
-        private static string Decode(string value)
+        private static string Decode<T>(T value)
         {
-            return string.IsNullOrEmpty(value) ? string.Empty : Encoding.ASCII.GetString(Convert.FromBase64String(value));
+            return value == null ? string.Empty : Encoding.ASCII.GetString(Convert.FromBase64String(value.ToString()));
         }
 
-        private static string Encode(string value)
+        private static string Encode<T>(T value)
         {
-            return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value));
+            return value == null ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value.ToString()));
         }
 
         private static string Hash(string value)
