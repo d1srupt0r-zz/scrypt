@@ -8,6 +8,11 @@ namespace scrypt
 {
     public class Program
     {
+        public static string Help
+        {
+            get { return @"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4="; }
+        }
+
         public static void Main(string[] args)
         {
             var output = new List<string>();
@@ -16,6 +21,10 @@ namespace scrypt
             try
             {
                 var commands = args.Select((value, index) => new { value = args[index], index });
+
+                // empty commands
+                if (!commands.Any())
+                    output.Add(Help);
 
                 // command parser
                 foreach (var cmd in commands)
@@ -75,9 +84,9 @@ namespace scrypt
 
         private static string Hash(string value)
         {
-            using (var sha = new SHA1Managed())
+            using (var algorythem = new SHA1Managed())
             {
-                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(sha.ComputeHash(Encoding.ASCII.GetBytes(value), 0, value.Length - 1));
+                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorythem.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
         }
     }
