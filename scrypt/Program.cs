@@ -10,7 +10,16 @@ namespace scrypt
     {
         public static string Help
         {
-            get { return @"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4="; }
+            get
+            {
+                return @"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWF
+                        zb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGh
+                        lciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHR
+                        oYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29
+                        udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25
+                        vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW5
+                        5IGNhcm5hbCBwbGVhc3VyZS4=";
+            }
         }
 
         public static void Main(string[] args)
@@ -48,6 +57,11 @@ namespace scrypt
                             hash = true;
                             break;
 
+                        case "/s":
+                        case "/scrypt":
+                            output.Add(SCrypt(args.Next(cmd.index)));
+                            break;
+
                         case "/v":
                         case "/verbose":
                             verbose = true;
@@ -82,6 +96,20 @@ namespace scrypt
         private static string Encode<T>(T value)
         {
             return value == null ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value.ToString()));
+        }
+
+        private static string SCrypt(string value)
+        {
+            var list = new List<string>();
+
+            for (var i = 0; i < value.Length; i += 3)
+            {
+                var sc = value.Length - (i + 3);
+                var rypt = value.Substring(i, sc);
+                list.Add(value.Substring(i, 3));
+            }
+
+            return string.Join(",", list);
         }
 
         private static string Hash(string value, string type)
