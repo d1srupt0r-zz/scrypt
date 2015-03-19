@@ -16,14 +16,15 @@ namespace scrypt
         public static void Main(string[] args)
         {
             var output = new List<string>();
+            string hashType = string.Empty;
             bool hash = false, verbose = false;
 
             try
             {
-                var commands = args.Select((value, index) => new { value = args[index], index });
+                var commands = args.Select((value, index) => new { value = args[index], index }).ToList();
 
                 // empty commands
-                if (!commands.Any())
+                if (commands.Count == 0)
                     output.Add(Help);
 
                 // command parser
@@ -33,17 +34,23 @@ namespace scrypt
                     {
                         case "/e":
                         case "/encode":
-                            output.Add(Encode(args[cmd.index + 1]));
+                            output.Add(Encode(args.Next(cmd.index)));
                             break;
 
                         case "/d":
                         case "/decode":
-                            output.Add(Decode(args[cmd.index + 1]));
+                            output.Add(Decode(args.Next(cmd.index)));
                             break;
 
                         case "/h":
                         case "/hash":
+                            hashType = args.Next(cmd.index);
                             hash = true;
+                            break;
+
+                        case "/s":
+                        case "/split":
+                            output.AddRange(Split(args.Next(cmd.index), 3).Select(Encode));
                             break;
 
                         case "/v":
@@ -54,7 +61,7 @@ namespace scrypt
                 }
 
                 if (hash)
-                    output.ForEach(value => Cout(Hash(value), verbose));
+                    output.ForEach(value => Cout(Hash(value, hashType), verbose));
                 else
                     output.ForEach(value => Cout(value, verbose));
             }
@@ -82,12 +89,21 @@ namespace scrypt
             return value == null ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value.ToString()));
         }
 
-        private static string Hash(string value)
+        private static string Hash(string value, string type)
         {
-            using (var algorythem = new SHA1Managed())
+            using (var algorythem = HashAlgorithm.Create(type) ?? new SHA1Managed())
             {
                 return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorythem.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
+        }
+
+        private static IEnumerable<string> Split(string value, int group)
+        {
+            return value.Select((c, i) => new { value = c, index = i })
+                .Where(item => item.index % group == 0)
+                .Select(item => value.Substring(item.index, item.index + group > value.Length
+                    ? value.Length - item.index
+                    : group));
         }
     }
 }
