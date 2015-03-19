@@ -16,7 +16,7 @@ namespace scrypt
         public static void Main(string[] args)
         {
             var output = new List<string>();
-            string hashType = string.Empty, input = string.Empty;
+            string hashType = string.Empty;
             bool hash = false, verbose = false;
 
             try
