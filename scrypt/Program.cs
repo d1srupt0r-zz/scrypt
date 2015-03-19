@@ -50,7 +50,15 @@ namespace scrypt
 
                         case "/s":
                         case "/split":
+                            output.AddRange(Split(args.Next(cmd.index), 3));
+                            break;
+
+                        case "/se":
                             output.AddRange(Split(args.Next(cmd.index), 3).Select(Encode));
+                            break;
+
+                        case "/sd":
+                            output.Add(string.Join(string.Empty, Split(args.Next(cmd.index), 4).Select(item => Decode(item.PadRight(4, '=')))));
                             break;
 
                         case "/v":
