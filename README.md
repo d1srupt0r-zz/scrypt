@@ -1,6 +1,6 @@
 # Scrypt
 **scrypt** is a basic encoding / decoding utility namely written for use encoding 
-and decoding base64(https://en.wikipedia.org/wiki/Base64) strings like the following:
+and decoding [Base64](https://en.wikipedia.org/wiki/Base64) strings like the following:
 
 ```
 VGhpcyBpcyBhIEJhc2U2NCBzdHJpbmcgYnVpbHQgdXNpbmcgdGhpcyB0b29sLg==
