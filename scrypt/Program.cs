@@ -16,8 +16,8 @@ namespace scrypt
         public static void Main(string[] args)
         {
             var output = new List<string>();
-            string hashType = string.Empty;
-            bool hash = false, verbose = false;
+            var hashType = string.Empty;
+            bool hash = false, twist = false, verbose = false;
 
             try
             {
@@ -48,6 +48,11 @@ namespace scrypt
                             hash = true;
                             break;
 
+                        case "/t":
+                        case "/twist":
+                            twist = true;
+                            break;
+
                         case "/s":
                         case "/split":
                             output.AddRange(Split(args.Next(cmd.index), 3));
@@ -70,6 +75,8 @@ namespace scrypt
 
                 if (hash)
                     output.ForEach(value => Cout(Hash(value, hashType), verbose));
+                else if (twist)
+                    output.ForEach(value => Cout(string.Join(string.Empty, Twist(value)), verbose));
                 else
                     output.ForEach(value => Cout(value, verbose));
             }
@@ -103,6 +110,11 @@ namespace scrypt
             {
                 return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorythem.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
+        }
+
+        private static IEnumerable<char> Twist(string value)
+        {
+            return value.Select((c, i) => new { value = c, index = i}).Select(item => value[item.index + 1 > value.Length - 1 ? value.Length - 1 : item.index + 1]);
         }
 
         private static IEnumerable<string> Split(string value, int group)
