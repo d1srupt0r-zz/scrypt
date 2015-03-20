@@ -16,12 +16,12 @@ namespace scrypt
         public static void Main(string[] args)
         {
             var output = new List<string>();
-            var hashType = string.Empty;
+            string hashType = string.Empty, twistType = string.Empty;
             bool hash = false, twist = false, verbose = false;
 
             try
             {
-                var commands = args.Select((value, index) => new { value = args[index], index }).ToList();
+                var commands = args.Select((c, i) => new { value = c, index = i }).ToList();
 
                 // empty commands
                 if (commands.Count == 0)
@@ -50,6 +50,7 @@ namespace scrypt
 
                         case "/t":
                         case "/twist":
+                            twistType = args.Next(cmd.index);
                             twist = true;
                             break;
 
@@ -74,11 +75,11 @@ namespace scrypt
                 }
 
                 if (hash)
-                    output.ForEach(value => Cout(Hash(value, hashType), verbose));
+                    output.ForEach(item => Cout(Hash(item, hashType), verbose));
                 else if (twist)
-                    output.ForEach(value => Cout(string.Join(string.Empty, Twist(value)), verbose));
+                    output.ForEach(item => Cout(string.Join(string.Empty, Twist(item, twistType)), verbose));
                 else
-                    output.ForEach(value => Cout(value, verbose));
+                    output.ForEach(item => Cout(item, verbose));
             }
             catch (Exception e)
             {
@@ -112,18 +113,29 @@ namespace scrypt
             }
         }
 
-        private static IEnumerable<char> Twist(string value)
-        {
-            return value.Select((c, i) => new { value = c, index = i}).Select(item => value[item.index + 1 > value.Length - 1 ? value.Length - 1 : item.index + 1]);
-        }
-
-        private static IEnumerable<string> Split(string value, int group)
+        private static IEnumerable<string> Split(string value, int size)
         {
             return value.Select((c, i) => new { value = c, index = i })
-                .Where(item => item.index % group == 0)
-                .Select(item => value.Substring(item.index, item.index + group > value.Length
+                .Where(item => item.index % size == 0)
+                .Select(item => value.Substring(item.index, item.index + size > value.Length
                     ? value.Length - item.index
-                    : group));
+                    : size));
+        }
+
+        private static IEnumerable<char> Twist(string value, string input)
+        {
+            switch (Enums.GetEnumValue<Enums.Orientation>(input))
+            {
+                case Enums.Orientation.Flip:
+                    return value.Select((c, i) => new { value = c, index = i })
+                        .Select(item => value[value.Length - 1 - item.index]);
+
+                case Enums.Orientation.Scramble:
+                    return value.Select((c, i) => new { value = c, index = i })
+                        .Select(item => item.index % 4 == 0 ? item.value.ChangeCase() : item.value);
+            }
+
+            return value.ToCharArray();
         }
     }
 }
