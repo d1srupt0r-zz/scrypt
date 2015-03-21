@@ -7,13 +7,22 @@ VGhpcyBpcyBhIEJhc2U2NCBzdHJpbmcgYnVpbHQgdXNpbmcgdGhpcyB0b29sLg==
 ```
 
 # Examples
-To [e]ncode and [d]ecode use the following:
+To [e]ncode and [d]ecode use:
 ```
-scrypt /e "Hello World"
+scrypt /e "Hello World!"
 scrypt /d SGVsbG8gV29ybGQh
 ```
 
-To [h]ash use the following, the default is sha1
+To [h]ash use (default is sha1):
 ```
-scrypt /e "Hello World" /h md5
+scrypt /e "Hello World!" /h md5
+```
+
+To [t]wist the text around use (default is Scramble):
+```
+scrypt /e "Hello World!" /t
+```
+To quickly "flip" the output use:
+```
+scrypt /e "Hello World!" /t Flip
 ```
