@@ -16,8 +16,8 @@ namespace scrypt
         public static void Main(string[] args)
         {
             var output = new List<string>();
-            string hashType = string.Empty, twistType = string.Empty;
-            bool hash = false, twist = false, verbose = false;
+            string hashType = string.Empty, twistType = string.Empty, cipherType = string.Empty;
+            bool cipher = false, hash = false, twist = false, verbose = false;
 
             try
             {
@@ -32,9 +32,10 @@ namespace scrypt
                 {
                     switch (cmd.value.ToLower())
                     {
-                        case "/e":
-                        case "/encode":
-                            output.Add(Encode(args.Next(cmd.index)));
+                        case "/c":
+                        case "/cipher":
+                            cipherType = args.Next(cmd.index);
+                            cipher = true;
                             break;
 
                         case "/d":
@@ -42,16 +43,20 @@ namespace scrypt
                             output.Add(Decode(args.Next(cmd.index)));
                             break;
 
+                        case "/dc":
+                        case "/decipher":
+                            output.Add(args.Next(cmd.index));
+                            break;
+
+                        case "/e":
+                        case "/encode":
+                            output.Add(Encode(args.Next(cmd.index)));
+                            break;
+
                         case "/h":
                         case "/hash":
                             hashType = args.Next(cmd.index);
                             hash = true;
-                            break;
-
-                        case "/t":
-                        case "/twist":
-                            twistType = args.Next(cmd.index);
-                            twist = true;
                             break;
 
                         case "/s":
@@ -67,6 +72,12 @@ namespace scrypt
                             output.Add(string.Join(string.Empty, Split(args.Next(cmd.index), 4).Select(item => Decode(item.PadRight(4, '=')))));
                             break;
 
+                        case "/t":
+                        case "/twist":
+                            twistType = args.Next(cmd.index);
+                            twist = true;
+                            break;
+
                         case "/v":
                         case "/verbose":
                             verbose = true;
@@ -74,7 +85,9 @@ namespace scrypt
                     }
                 }
 
-                if (hash)
+                if (cipher)
+                    output.ForEach(item => Cout(string.Join(string.Empty, Decipher(item, cipherType)), verbose));
+                else if (hash)
                     output.ForEach(item => Cout(Hash(item, hashType), verbose));
                 else if (twist)
                     output.ForEach(item => Cout(string.Join(string.Empty, Twist(item, twistType)), verbose));
@@ -93,6 +106,15 @@ namespace scrypt
                 Console.WriteLine("{0} : {1}", value, value.Length);
             else
                 Console.WriteLine(value);
+        }
+
+        private static IEnumerable<char> Decipher(string value, string type)
+        {
+            var ciphers = new[] { @"^[a-z]:[a-z]$" };
+
+            var key = ciphers.Select(pattern => pattern.ToRegex().Match(type.ToLower()).Value);
+
+            return value.ToCharArray();
         }
 
         private static string Decode<T>(T value)
@@ -122,9 +144,9 @@ namespace scrypt
                     : size));
         }
 
-        private static IEnumerable<char> Twist(string value, string input)
+        private static IEnumerable<char> Twist(string value, string type)
         {
-            switch (Enums.GetEnumValue<Enums.Orientation>(input))
+            switch (Enums.GetEnumValue<Enums.Orientation>(type))
             {
                 case Enums.Orientation.Flip:
                     return value.Select((c, i) => new { value = c, index = i })
@@ -132,7 +154,7 @@ namespace scrypt
 
                 case Enums.Orientation.Scramble:
                     return value.Select((c, i) => new { value = c, index = i })
-                        .Select(item => item.index % 4 == 0 ? item.value.ChangeCase() : item.value);
+                        .Select(item => item.index % 4 == 0 ? item.value.SwapCase() : item.value);
             }
 
             return value.ToCharArray();
