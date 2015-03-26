@@ -40,6 +40,10 @@ namespace scrypt
                 {
                     output.AddRange(cmds.Action(Decode, "d", "decode"));
                     output.AddRange(cmds.Action(Encode, "e", "encode"));
+
+                    /* twist = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
+                    output.AddRange(cmds.Where(item => !string.IsNullOrEmpty(item.Value))
+                        .Select(item => string.Join(string.Empty, Twist(item.Value, twist.Value ?? string.Empty))));*/
                 }
 
                 if (output.Count > 0)
@@ -85,9 +89,9 @@ namespace scrypt
             return string.Empty;
         }
 
-        private static IEnumerable<char> Twist(string value, string type = "Scramble")
+        private static IEnumerable<char> Twist(string value, string type)
         {
-            switch (Enums.GetEnumValue<Enums.Orientation>(type))
+            switch (Enums.GetEnumValue<Enums.Orientation>(type ?? string.Empty))
             {
                 case Enums.Orientation.Flip:
                     return value.ToItems().Select(item => value[value.Length - 1 - item.Index]);
