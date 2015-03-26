@@ -29,7 +29,7 @@ namespace scrypt
             try
             {
                 var output = new List<string>();
-                var cmds = args.ToItems();
+                var cmds = args.ToItems().ToList();
 
                 var debug = cmds.Any(item => item.Command == "debug");
                 var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
@@ -40,10 +40,7 @@ namespace scrypt
                 {
                     output.AddRange(cmds.Action(Decode, "d", "decode"));
                     output.AddRange(cmds.Action(Encode, "e", "encode"));
-
-                    /* twist = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
-                    output.AddRange(cmds.Where(item => !string.IsNullOrEmpty(item.Value))
-                        .Select(item => string.Join(string.Empty, Twist(item.Value, twist.Value ?? string.Empty))));*/
+                    var twist = cmds.Action(Twist, "t", "twist");
                 }
 
                 if (output.Count > 0)
@@ -52,6 +49,10 @@ namespace scrypt
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+
+#if DEBUG
+                Console.Error.WriteLine(e.StackTrace);
+#endif
             }
         }
 

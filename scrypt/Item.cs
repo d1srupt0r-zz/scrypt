@@ -2,8 +2,6 @@
 {
     public class Item
     {
-        private bool Hide { get; set; }
-
         public char Character { get; set; }
 
         public string Command { get; set; }
@@ -11,6 +9,8 @@
         public int Index { get; set; }
 
         public string Value { get; set; }
+
+        private bool Hide { get; set; }
 
         public Item()
         {
@@ -32,7 +32,7 @@
 
         public override string ToString()
         {
-            return Hide ? string.Empty : string.Join(" ", new string[] { Index.ToString(), Command, Value });
+            return Hide ? string.Empty : string.Join(" ", Index, Command, Value);
         }
     }
 }
