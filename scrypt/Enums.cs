@@ -7,7 +7,8 @@ namespace scrypt
         public enum Orientation
         {
             Scramble,
-            Flip
+            Flip,
+            Rot
         }
 
         public static T GetEnumValue<T>(string value)
