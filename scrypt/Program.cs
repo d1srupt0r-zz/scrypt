@@ -33,14 +33,14 @@ namespace scrypt
 
                 var debug = cmds.Any(item => item.Command == "debug");
                 var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
+                var twist = cmds.Any(item => item.Command == "t" || item.Command == "twist");
 
                 if (debug)
                     output.AddRange(cmds.Where(item => item.Command != "debug").Select(item => item.ToString()));
                 else
                 {
-                    output.AddRange(cmds.Action(Decode, "d", "decode"));
-                    output.AddRange(cmds.Action(Encode, "e", "encode"));
-                    var twist = cmds.Action(Twist, "t", "twist");
+                    output.Add(cmds.Action(Encode, "e", "encode").FirstOrDefault());
+                    output.Add(cmds.Action(Decode, "d", "decode").FirstOrDefault());
                 }
 
                 if (output.Count > 0)
@@ -58,7 +58,7 @@ namespace scrypt
 
         private static void Cout(string value, bool verbose = false)
         {
-            if (value.Length == 0)
+            if (string.IsNullOrEmpty(value))
                 return;
 
             if (verbose)
@@ -67,41 +67,36 @@ namespace scrypt
                 Console.WriteLine(value);
         }
 
-        private static string Decode<T>(T value)
+        private static string Decode<T>(T item) where T : Item
         {
-            return value == null ? string.Empty : Encoding.ASCII.GetString(Convert.FromBase64String(value.ToString()));
+            return item == null ? string.Empty : Encoding.ASCII.GetString(Convert.FromBase64String(item.Value));
         }
 
-        private static string Encode<T>(T value)
+        private static string Encode<T>(T item) where T : Item
         {
-            return value == null ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(value.ToString()));
+            return item == null ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(item.Value));
         }
 
-        private static string Hash(string value, string type)
+        private static string Hash(string value)
         {
-            using (var algorithm = HashAlgorithm.Create(type) ?? new SHA1Managed())
+            using (var algorithm = HashAlgorithm.Create(value) ?? new SHA1Managed())
             {
                 return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
         }
 
-        private static string Rot(string value, string type)
+        private static IEnumerable<char> Twist(string value)
         {
-            return string.Empty;
-        }
-
-        private static IEnumerable<char> Twist(string value, string type)
-        {
-            switch (Enums.GetEnumValue<Enums.Orientation>(type ?? string.Empty))
+            switch (Enums.GetEnumValue<Enums.Orientation>(value ?? string.Empty))
             {
                 case Enums.Orientation.Flip:
-                    return value.ToItems().Select(item => value[value.Length - 1 - item.Index]);
+                    return value.ToItems().Select(x => x.Value[x.Value.Length - 1 - x.Index]);
 
                 case Enums.Orientation.Scramble:
-                    return value.ToItems().Select(item => item.Index % 4 == 0 ? item.Character.SwapCase() : item.Character);
+                    return value.ToItems().Select(x => x.Index % 4 == 0 ? x.Character.SwapCase() : x.Character);
 
                 case Enums.Orientation.Rot:
-                    return value.ToItems().Select(item => value[item.Index + 13]);
+                    return value.ToItems().Select(x => x.Value[x.Index + 13]);
             }
 
             return value.ToCharArray();

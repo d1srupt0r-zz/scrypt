@@ -7,16 +7,15 @@ namespace scrypt
 {
     public static class Extensions
     {
-        public static List<char> Action(this IEnumerable<Item> list, Func<string, string, IEnumerable<char>> action, params string[] values)
+        public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, params string[] values)
         {
-            var type = list.FirstOrDefault(item => values.Contains(item.Command)).Value ?? string.Empty;
-            return list.SelectMany(item => action(item.Value, type)).ToList();
+            return list.Where(x => values.Contains(list.First() is Item ? (x as Item).Command : x.ToString())).Select(action);
         }
 
-        public static List<string> Action(this IEnumerable<Item> list, Func<string, string> action, params string[] values)
+        /*public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, bool condition)
         {
-            return list.Where(item => values.Contains(item.Command)).Select(action).ToList();
-        }
+            return condition ? list.Select(action) : list;
+        }*/
 
         public static bool IsCommand(this string value)
         {
