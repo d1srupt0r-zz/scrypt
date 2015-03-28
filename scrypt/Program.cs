@@ -47,7 +47,7 @@ namespace scrypt
                 if (output.Count > 0)
                 {
                     Cout(output
-                        .Select(o => twist != null ? Twist(/*o.ToCharArray()*/o, twist.Value) : o)
+                        .Select(o => twist != null ? Twist(o, twist.Value) : o)
                         .Select(o => hash != null ? Hash(o, hash.Value) : o), verbose);
                 }
             }
@@ -89,7 +89,7 @@ namespace scrypt
 
         private static string Hash(string value, string type = null)
         {
-            using (var algorithm = type != null ? HashAlgorithm.Create(type) : new SHA1Managed())
+            using (var algorithm = HashAlgorithm.Create(type ?? string.Empty) ?? new SHA1Managed())
             {
                 return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
