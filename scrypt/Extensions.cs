@@ -32,9 +32,9 @@ namespace scrypt
             return !string.IsNullOrEmpty(value) && @"/[a-z]*".ToRegex().IsMatch(value);
         }
 
-        public static string Next(this IList<string> list, int index)
+        public static string Next<T>(this IList<T> list, int index)
         {
-            return list.Count > index + 1 ? list[index + 1] : string.Empty;
+            return list.Count > index + 1 ? list[index + 1].ToString() : string.Empty;
         }
 
         public static IEnumerable<string> Split(this string value, int size)
@@ -50,9 +50,9 @@ namespace scrypt
             return char.IsUpper(value) ? char.ToLower(value) : char.ToUpper(value);
         }
 
-        public static IEnumerable<Item> ToItems(this IList<string> list)
+        public static IEnumerable<Item> ToItems<T>(this IList<T> list)
         {
-            return list.Select((c, i) => c.IsCommand() ? new Item(i, c, list.Next(i)) : new Item(i, c));
+            return list.Select((c, i) => c.ToString().IsCommand() ? new Item(i, c.ToString(), list.Next(i)) : new Item(i, c.ToString()));
         }
 
         public static IEnumerable<Item> ToItems(this string value)

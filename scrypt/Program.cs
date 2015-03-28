@@ -45,7 +45,7 @@ namespace scrypt
                     );
 
                 if (output.Count > 0)
-                    output.ToList().ForEach(o => Cout(o, verbose));
+                    output.ForEach(o => Cout(o, verbose));
             }
             catch (Exception e)
             {
@@ -86,26 +86,21 @@ namespace scrypt
             }
         }
 
-        private static string Twist(string value, string type = null)
+        private static string Twist(IList<char> value, string type = null)
         {
-            IEnumerable<char> chars = value.ToCharArray();
-
             switch (Enums.GetEnumValue<Enums.Orientation>(type ?? string.Empty))
             {
                 case Enums.Orientation.Flip:
-                    chars = value.ToItems().Select(x => x.Value[x.Value.Length - 1 - x.Index]);
-                    break;
+                    return string.Join(string.Empty, value.ToItems().Select(x => x.Value[x.Value.Length - 1 - x.Index]));
 
                 case Enums.Orientation.Scramble:
-                    chars = value.ToItems().Select(x => x.Index % 4 == 0 ? x.Value.First().SwapCase() : x.Value.First());
-                    break;
+                    return string.Join(string.Empty, value.ToItems().Select(x => x.Index % 4 == 0 ? x.Value.First().SwapCase() : x.Value.First()));
 
                 case Enums.Orientation.Rot:
-                    chars = value.ToItems().Select(x => x.Value[x.Index + 13]);
-                    break;
+                    return string.Join(string.Empty, value.ToItems().Select(x => x.Value[x.Index + 13]));
             }
 
-            return string.Join(string.Empty, chars);
+            return value.ToString();
         }
     }
 }
