@@ -45,7 +45,11 @@ namespace scrypt
                     );
 
                 if (output.Count > 0)
-                    output.ForEach(o => Cout(o, verbose));
+                {
+                    Cout(output
+                        .Select(o => twist != null ? Twist(/*o.ToCharArray()*/o, twist.Value) : o)
+                        .Select(o => hash != null ? Hash(o, hash.Value) : o), verbose);
+                }
             }
             catch (Exception e)
             {
@@ -68,6 +72,11 @@ namespace scrypt
                 Console.WriteLine(value);
         }
 
+        private static void Cout(IEnumerable<string> values, bool verbose = false)
+        {
+            values.ToList().ForEach(value => Cout(value, verbose));
+        }
+
         private static string Decode<T>(T item) where T : Item
         {
             return item == null ? string.Empty : Encoding.ASCII.GetString(Convert.FromBase64String(item.Value));
@@ -86,18 +95,23 @@ namespace scrypt
             }
         }
 
-        private static string Twist(IList<char> value, string type = null)
+        private static string Twist(string value, string type = null)
         {
             switch (Enums.GetEnumValue<Enums.Orientation>(type ?? string.Empty))
             {
                 case Enums.Orientation.Flip:
-                    return string.Join(string.Empty, value.ToItems().Select(x => x.Value[x.Value.Length - 1 - x.Index]));
+                    return string.Join(string.Empty, value.ToItems().Select(x => value[value.Length - 1 - x.Index]));
 
                 case Enums.Orientation.Scramble:
-                    return string.Join(string.Empty, value.ToItems().Select(x => x.Index % 4 == 0 ? x.Value.First().SwapCase() : x.Value.First()));
+                    return string.Join(string.Empty, value.ToItems().Select(x => x.Index % 4 == 0
+                        ? x.Value.First().SwapCase()
+                        : x.Value.First()));
 
                 case Enums.Orientation.Rot:
-                    return string.Join(string.Empty, value.ToItems().Select(x => x.Value[x.Index + 13]));
+                    return string.Join(string.Empty, value.ToItems()
+                        .Select(x => (int)x.Value.First())
+                        .Select(x => x + 13)
+                        .Select(x => (char)x));
             }
 
             return value.ToString();
