@@ -2,15 +2,11 @@
 {
     public class Item
     {
-        public char Character { get; set; }
-
         public string Command { get; set; }
 
         public int Index { get; set; }
 
         public string Value { get; set; }
-
-        private bool Hide { get; set; }
 
         public Item()
         {
@@ -18,21 +14,26 @@
 
         public Item(int index, string command, string value)
         {
-            Hide = !command.IsCommand() || value.IsCommand();
             Index = index;
             Command = command.IsCommand() ? command.Replace("/", string.Empty) : null;
             Value = value.IsCommand() || string.IsNullOrEmpty(value) ? null : value;
         }
 
+        public Item(int index, string value)
+        {
+            Index = index;
+            Value = value;
+        }
+
         public Item(int index, char character)
         {
             Index = index;
-            Character = character;
+            Value = character.ToString();
         }
 
         public override string ToString()
         {
-            return Hide ? string.Empty : string.Join(" ", Index, Command, Value);
+            return string.Join(" ", Index, Command, Value);
         }
     }
 }

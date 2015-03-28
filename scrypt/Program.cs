@@ -33,18 +33,19 @@ namespace scrypt
 
                 var debug = cmds.Any(item => item.Command == "debug");
                 var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
-                var twist = cmds.Any(item => item.Command == "t" || item.Command == "twist");
+                var twist = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
+                var hash = cmds.FirstOrDefault(item => item.Command == "h" || item.Command == "hash");
 
                 if (debug)
-                    output.AddRange(cmds.Where(item => item.Command != "debug").Select(item => item.ToString()));
+                    output.Append(cmds.Select(item => item.ToString()));
                 else
-                {
-                    output.Add(cmds.Action(Encode, "e", "encode").FirstOrDefault());
-                    output.Add(cmds.Action(Decode, "d", "decode").FirstOrDefault());
-                }
+                    output.Append(
+                        cmds.Action(Encode, "e", "encode").FirstOrDefault(),
+                        cmds.Action(Decode, "d", "decode").FirstOrDefault()
+                    );
 
                 if (output.Count > 0)
-                    output.ForEach(o => Cout(o, verbose));
+                    output.ToList().ForEach(o => Cout(o, verbose));
             }
             catch (Exception e)
             {
@@ -77,29 +78,34 @@ namespace scrypt
             return item == null ? string.Empty : Convert.ToBase64String(Encoding.ASCII.GetBytes(item.Value));
         }
 
-        private static string Hash(string value)
+        private static string Hash(string value, string type = null)
         {
-            using (var algorithm = HashAlgorithm.Create(value) ?? new SHA1Managed())
+            using (var algorithm = type != null ? HashAlgorithm.Create(type) : new SHA1Managed())
             {
                 return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
         }
 
-        private static IEnumerable<char> Twist(string value)
+        private static string Twist(string value, string type = null)
         {
-            switch (Enums.GetEnumValue<Enums.Orientation>(value ?? string.Empty))
+            IEnumerable<char> chars = value.ToCharArray();
+
+            switch (Enums.GetEnumValue<Enums.Orientation>(type ?? string.Empty))
             {
                 case Enums.Orientation.Flip:
-                    return value.ToItems().Select(x => x.Value[x.Value.Length - 1 - x.Index]);
+                    chars = value.ToItems().Select(x => x.Value[x.Value.Length - 1 - x.Index]);
+                    break;
 
                 case Enums.Orientation.Scramble:
-                    return value.ToItems().Select(x => x.Index % 4 == 0 ? x.Character.SwapCase() : x.Character);
+                    chars = value.ToItems().Select(x => x.Index % 4 == 0 ? x.Value.First().SwapCase() : x.Value.First());
+                    break;
 
                 case Enums.Orientation.Rot:
-                    return value.ToItems().Select(x => x.Value[x.Index + 13]);
+                    chars = value.ToItems().Select(x => x.Value[x.Index + 13]);
+                    break;
             }
 
-            return value.ToCharArray();
+            return string.Join(string.Empty, chars);
         }
     }
 }

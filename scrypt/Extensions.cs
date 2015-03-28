@@ -9,17 +9,27 @@ namespace scrypt
     {
         public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, params string[] values)
         {
-            return list.Where(x => values.Contains(list.First() is Item ? (x as Item).Command : x.ToString())).Select(action);
+            if (values.Length > 0)
+                return list.Where(x => values.Contains(x is Item ? (x as Item).Command : x.ToString())).Select(action);
+            else
+                return list.Select(action);
         }
 
-        /*public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, bool condition)
+        public static IList<string> Append(this List<string> list, params string[] values)
         {
-            return condition ? list.Select(action) : list;
-        }*/
+            list.AddRange(values.Where(s => !string.IsNullOrEmpty(s)));
+            return list;
+        }
+
+        public static IList<string> Append(this List<string> list, IEnumerable<string> values)
+        {
+            list.AddRange(values.Where(s => !string.IsNullOrEmpty(s)));
+            return list;
+        }
 
         public static bool IsCommand(this string value)
         {
-            return @"/[a-z]*".ToRegex().IsMatch(value);
+            return !string.IsNullOrEmpty(value) && @"/[a-z]*".ToRegex().IsMatch(value);
         }
 
         public static string Next(this IList<string> list, int index)
@@ -42,7 +52,7 @@ namespace scrypt
 
         public static IEnumerable<Item> ToItems(this IList<string> list)
         {
-            return list.Select((c, i) => new Item(i, c, list.Next(i)));
+            return list.Select((c, i) => c.IsCommand() ? new Item(i, c, list.Next(i)) : new Item(i, c));
         }
 
         public static IEnumerable<Item> ToItems(this string value)
