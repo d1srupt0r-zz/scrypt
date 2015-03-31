@@ -31,6 +31,8 @@ namespace scrypt
                 var output = new List<string>();
                 var cmds = args.ToItems().ToList();
 
+                var tmp = Decipher("Hello World!");
+
                 var debug = cmds.Any(item => item.Command == "debug");
                 var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
                 var twist = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
@@ -93,6 +95,11 @@ namespace scrypt
             {
                 return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
             }
+        }
+
+        private static IEnumerable<int> Decipher(string value)
+        {
+            return value.ToLower().Where(c => char.IsLetter(c)).Select(c => Alphabet.IndexOf(c)).Cast<int>();
         }
 
         private static string Twist(string value, string type = null)
