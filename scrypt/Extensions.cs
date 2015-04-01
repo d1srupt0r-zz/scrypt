@@ -27,6 +27,11 @@ namespace scrypt
             return list;
         }
 
+        public static string Flip(this string value)
+        {
+            return string.Join(string.Empty, value.ToItems().Select(x => value[value.Length - 1 - x.Index]));
+        }
+
         public static bool IsCommand(this string value)
         {
             return !string.IsNullOrEmpty(value) && @"/[a-z]*".ToRegex().IsMatch(value);
@@ -63,6 +68,13 @@ namespace scrypt
         public static Regex ToRegex(this string value)
         {
             return new Regex(@value, RegexOptions.Compiled);
+        }
+
+        public static string Twist(this string value)
+        {
+            return string.Join(string.Empty, value.ToItems().Select(x => x.Index % 4 == 0
+                ? x.Value.First().SwapCase()
+                : x.Value.First()));
         }
     }
 }

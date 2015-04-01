@@ -31,7 +31,7 @@ namespace scrypt
                 var output = new List<string>();
                 var cmds = args.ToItems().ToList();
 
-                var tmp = Decipher("Hello World!");
+                var tmp = Decipher("Zori v drterc irrsd", "Z:W");
 
                 var debug = cmds.Any(item => item.Command == "debug");
                 var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
@@ -56,7 +56,6 @@ namespace scrypt
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-
 #if DEBUG
                 Console.Error.WriteLine(e.StackTrace);
 #endif
@@ -97,9 +96,13 @@ namespace scrypt
             }
         }
 
-        private static IEnumerable<int> Decipher(string value)
+        private static string Decipher(string value, string type = null)
         {
-            return value.ToLower().Where(c => char.IsLetter(c)).Select(c => Alphabet.IndexOf(c)).Cast<int>();
+            var typeC = @"[a-z]:[a-z]".ToRegex().Match(type.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var key = string.Join(string.Empty, Alphabet.Split(typeC).Select(g => g.Flip())) + typeC;
+            return string.Join(string.Empty, value
+                .Where(c => char.IsLetter(c)).ToList()
+                .Select(x => Alphabet.IndexOf(x)).Select(i => key[i]));
         }
 
         private static string Twist(string value, string type = null)
@@ -107,12 +110,10 @@ namespace scrypt
             switch (Enums.GetEnumValue<Enums.Orientation>(type ?? string.Empty))
             {
                 case Enums.Orientation.Flip:
-                    return string.Join(string.Empty, value.ToItems().Select(x => value[value.Length - 1 - x.Index]));
+                    return value.Flip();
 
                 case Enums.Orientation.Scramble:
-                    return string.Join(string.Empty, value.ToItems().Select(x => x.Index % 4 == 0
-                        ? x.Value.First().SwapCase()
-                        : x.Value.First()));
+                    return value.Twist();
 
                 case Enums.Orientation.Rot:
                     return string.Join(string.Empty, value.ToItems()
