@@ -1,5 +1,5 @@
 # Scrypt
-**scrypt** is a basic encoding / decoding utility namely written for use encoding 
+**scrypt** is a basic encoding / decoding utility namely written for use encoding
 and decoding [Base64](https://en.wikipedia.org/wiki/Base64) strings like the following:
 
 ```
@@ -25,4 +25,9 @@ scrypt /e "Hello World!" /t
 To quickly "flip" the output use:
 ```
 scrypt /e "Hello World!" /t Flip
+```
+
+To de[c]ipher a string use (default [k]ey is Z:W):
+```
+script /c "Zori v drterc irrsd ch ur lrgc" /k Z:W
 ```
