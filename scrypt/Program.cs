@@ -34,7 +34,7 @@ namespace scrypt
                     output.Append(
                         cmds.Action(Encode, "e", "encode").FirstOrDefault(),
                         cmds.Action(Decode, "d", "decode").FirstOrDefault(),
-                        cmds.Action(item => Decipher(item.Value, cipherKey != null ? cipherKey.Value : "Z:W"), "c", "cipher").FirstOrDefault()
+                        cmds.Action(item => Cipher(item.Value, cipherKey != null ? cipherKey.Value : "Z:W"), "c", "cipher").FirstOrDefault()
                     );
 
                 if (output.Count > 0)
@@ -87,10 +87,10 @@ namespace scrypt
             }
         }
 
-        private static string Decipher(string value, string type = null)
+        private static string Cipher(string value, string cipherKey = null)
         {
-            var swapKey = @"[a-z]:[a-z]".ToRegex().Match(type.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
-            var key = string.Join(string.Empty, Const.Alphabet.Split(swapKey).Select(g => g.Flip())) + swapKey;
+            var swap = @"[a-z]:[a-z]".ToRegex().Match(cipherKey.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var key = string.Join(string.Empty, Const.Alphabet.Split(swap).Select(g => g.Flip())) + swap;
             return string.Join(string.Empty, value.Swap(key));
         }
 
