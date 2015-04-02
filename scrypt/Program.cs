@@ -8,21 +8,11 @@ namespace scrypt
 {
     public class Program
     {
-        public static string Alphabet
-        {
-            get { return @"abcdefghijklmnopqrstuvwxyz"; }
-        }
-
-        public static string Help
-        {
-            get { return @"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4="; }
-        }
-
         public static void Main(string[] args)
         {
             if (args.Length == 0)
             {
-                Console.WriteLine(Help);
+                Console.WriteLine(Const.Help);
                 return;
             }
 
@@ -31,26 +21,27 @@ namespace scrypt
                 var output = new List<string>();
                 var cmds = args.ToItems().ToList();
 
-                var tmp = Decipher("Zori v drterc irrsd", "Z:W");
-
                 var debug = cmds.Any(item => item.Command == "debug");
                 var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
-                var twist = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
-                var hash = cmds.FirstOrDefault(item => item.Command == "h" || item.Command == "hash");
+
+                var twistType = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
+                var hashType = cmds.FirstOrDefault(item => item.Command == "h" || item.Command == "hash");
+                var cipherKey = cmds.FirstOrDefault(item => item.Command == "k" || item.Command == "key");
 
                 if (debug)
                     output.Append(cmds.Select(item => item.ToString()));
                 else
                     output.Append(
                         cmds.Action(Encode, "e", "encode").FirstOrDefault(),
-                        cmds.Action(Decode, "d", "decode").FirstOrDefault()
+                        cmds.Action(Decode, "d", "decode").FirstOrDefault(),
+                        cmds.Action(item => Decipher(item.Value, cipherKey != null ? cipherKey.Value : "Z:W"), "c", "cipher").FirstOrDefault()
                     );
 
                 if (output.Count > 0)
                 {
                     Cout(output
-                        .Select(o => twist != null ? Twist(o, twist.Value) : o)
-                        .Select(o => hash != null ? Hash(o, hash.Value) : o), verbose);
+                        .Select(o => twistType != null ? Twist(o, twistType.Value) : o)
+                        .Select(o => hashType != null ? Hash(o, hashType.Value) : o), verbose);
                 }
             }
             catch (Exception e)
@@ -98,11 +89,9 @@ namespace scrypt
 
         private static string Decipher(string value, string type = null)
         {
-            var typeC = @"[a-z]:[a-z]".ToRegex().Match(type.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
-            var key = string.Join(string.Empty, Alphabet.Split(typeC).Select(g => g.Flip())) + typeC;
-            return string.Join(string.Empty, value
-                .Where(c => char.IsLetter(c)).ToList()
-                .Select(x => Alphabet.IndexOf(x)).Select(i => key[i]));
+            var swapKey = @"[a-z]:[a-z]".ToRegex().Match(type.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var key = string.Join(string.Empty, Const.Alphabet.Split(swapKey).Select(g => g.Flip())) + swapKey;
+            return string.Join(string.Empty, value.Swap(key));
         }
 
         private static string Twist(string value, string type = null)

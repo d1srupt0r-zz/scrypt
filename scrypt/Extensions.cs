@@ -50,6 +50,19 @@ namespace scrypt
                     : size));
         }
 
+        public static IEnumerable<char> Swap(this string value, string key)
+        {
+            foreach (var c in value)
+            {
+                var i = Const.Alphabet.IndexOf(char.ToLower(c));
+
+                if (char.IsLetter(c))
+                    yield return char.IsUpper(c) ? char.ToUpper(key[i]) : key[i];
+                else
+                    yield return c;
+            }
+        }
+
         public static char SwapCase(this char value)
         {
             return char.IsUpper(value) ? char.ToLower(value) : char.ToUpper(value);
