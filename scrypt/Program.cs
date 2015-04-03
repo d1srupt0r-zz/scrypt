@@ -18,30 +18,26 @@ namespace scrypt
 
             try
             {
-                var output = new List<string>();
-                var cmds = args.ToItems().ToList();
+                var Output = new ListOfItems(args);
 
-                var debug = cmds.Any(item => item.Command == "debug");
-                var verbose = cmds.Any(item => item.Command == "v" || item.Command == "verbose");
-
-                var twistType = cmds.FirstOrDefault(item => item.Command == "t" || item.Command == "twist");
-                var hashType = cmds.FirstOrDefault(item => item.Command == "h" || item.Command == "hash");
-                var cipherKey = cmds.FirstOrDefault(item => item.Command == "k" || item.Command == "key");
-
-                if (debug)
-                    output.Append(cmds.Select(item => item.ToString()));
+                if (Output.Debug)
+                    Console.WriteLine("DEBUG");//Output.Items.ForEach(Console.WriteLine);
                 else
-                    output.Append(
-                        cmds.Action(Encode, "e", "encode").FirstOrDefault(),
-                        cmds.Action(Decode, "d", "decode").FirstOrDefault(),
-                        cmds.Action(item => Cipher(item.Value, cipherKey != null ? cipherKey.Value : "Z:W"), "c", "cipher").FirstOrDefault()
-                    );
-
-                if (output.Count > 0)
                 {
-                    Cout(output
+                    /*var data = new
+                    {
+                        twistType = cmds.Next(cmds.FirstOrDefault(item => item.Value == "/t" || item.Value == "/twist").Index),
+                        hashType = cmds.FirstOrDefault(item => item.Value == "/h" || item.Value == "/hash"),
+                        key = cmds.FirstOrDefault(item => item.Value == "/k" || item.Value == "/key")
+                    };
+
+                    var encode = cmds.Action(Encode, "/e", "/encode").FirstOrDefault();
+                    var decode = cmds.Action(Decode, "/d", "/decode").FirstOrDefault();
+                    var cipher = cmds.Action(item => Cipher(item.Value, data.key != null ? data.key.Value : "Z:W"), "c", "cipher").FirstOrDefault();*/
+
+                    /*Console.WriteLine("{0}", data
                         .Select(o => twistType != null ? Twist(o, twistType.Value) : o)
-                        .Select(o => hashType != null ? Hash(o, hashType.Value) : o), verbose);
+                        .Select(o => hashType != null ? Hash(o, hashType.Value) : o), verbose);*/
                 }
             }
             catch (Exception e)
@@ -87,11 +83,11 @@ namespace scrypt
             }
         }
 
-        private static string Cipher(string value, string cipherKey = null)
+        private static string Cipher(string value, string key = null)
         {
-            var swap = @"[a-z]:[a-z]".ToRegex().Match(cipherKey.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
-            var key = string.Join(string.Empty, Const.Alphabet.Split(swap).Select(g => g.Flip())) + swap;
-            return string.Join(string.Empty, value.Swap(key));
+            var swap = @"[a-z]:[a-z]".ToRegex().Match(key.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var map = string.Join(string.Empty, Const.Alphabet.Split(swap).Select(g => g.Flip())) + swap;
+            return string.Join(string.Empty, value.Swap(map));
         }
 
         private static string Twist(string value, string type = null)

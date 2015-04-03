@@ -10,7 +10,7 @@ namespace scrypt
         public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, params string[] values)
         {
             if (values.Length > 0)
-                return list.Where(x => values.Contains(x is Item ? (x as Item).Command : x.ToString())).Select(action);
+                return list.Where(x => values.Contains(x is Item ? (x as Item).Value : x.ToString())).Select(action);
             else
                 return list.Select(action);
         }
@@ -30,11 +30,6 @@ namespace scrypt
         public static string Flip(this string value)
         {
             return string.Join(string.Empty, value.ToItems().Select(x => value[value.Length - 1 - x.Index]));
-        }
-
-        public static bool IsCommand(this string value)
-        {
-            return !string.IsNullOrEmpty(value) && @"/[a-z]*".ToRegex().IsMatch(value);
         }
 
         public static string Next<T>(this IList<T> list, int index)
@@ -70,12 +65,12 @@ namespace scrypt
 
         public static IEnumerable<Item> ToItems<T>(this IList<T> list)
         {
-            return list.Select((c, i) => c.ToString().IsCommand() ? new Item(i, c.ToString(), list.Next(i)) : new Item(i, c.ToString()));
+            return list.Select((c, i) => new Item { Value = c.ToString(), Index = i });
         }
 
         public static IEnumerable<Item> ToItems(this string value)
         {
-            return value.Select((c, i) => new Item(i, c));
+            return value.Select((c, i) => new Item { Value = c.ToString(), Index = i });
         }
 
         public static Regex ToRegex(this string value)
