@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace scrypt
 {
     public static class Extensions
     {
+        private static Func<char, int, Item> CharItems = (x, i) => new Item { Value = x.ToString(), Index = i };
+
         public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, params string[] values)
         {
             if (values.Length > 0)
@@ -27,19 +30,36 @@ namespace scrypt
             return list;
         }
 
-        public static string Flip(this string value)
+        public static string Decode<T>(this T value)
         {
-            return string.Join(string.Empty, value.ToItems().Select(x => value[value.Length - 1 - x.Index]));
+            return Encoding.ASCII.GetString(Convert.FromBase64String(value is Item
+                ? (value as Item).Value
+                : value.ToString()));
         }
 
-        public static string Next<T>(this IList<T> list, int index)
+        public static string Encode<T>(this T value)
         {
-            return list.Count > index + 1 ? list[index + 1].ToString() : string.Empty;
+            return Convert.ToBase64String(Encoding.ASCII.GetBytes(value is Item
+                ? (value as Item).Value
+                : value.ToString()));
+        }
+
+        public static T Next<T>(this IList<T> list, int index)
+        {
+            return list.Count > index + 1 ? list[index + 1] : default(T);
+        }
+
+        public static string Rot(this string value)
+        {
+            return string.Join(string.Empty, value.Select(CharItems)
+                .Select(x => (int)x.Value.First())
+                .Select(x => x + 13)
+                .Select(x => (char)x));
         }
 
         public static IEnumerable<string> Split(this string value, int size)
         {
-            return value.ToItems().Where(item => item.Index % size == 0)
+            return value.Select(CharItems).Where(item => item.Index % size == 0)
                 .Select(item => value.Substring(item.Index, item.Index + size > value.Length
                     ? value.Length - item.Index
                     : size));
@@ -63,16 +83,6 @@ namespace scrypt
             return char.IsUpper(value) ? char.ToLower(value) : char.ToUpper(value);
         }
 
-        public static IEnumerable<Item> ToItems<T>(this IList<T> list)
-        {
-            return list.Select((c, i) => new Item { Value = c.ToString(), Index = i });
-        }
-
-        public static IEnumerable<Item> ToItems(this string value)
-        {
-            return value.Select((c, i) => new Item { Value = c.ToString(), Index = i });
-        }
-
         public static Regex ToRegex(this string value)
         {
             return new Regex(@value, RegexOptions.Compiled);
@@ -80,7 +90,7 @@ namespace scrypt
 
         public static string Twist(this string value)
         {
-            return string.Join(string.Empty, value.ToItems().Select(x => x.Index % 4 == 0
+            return string.Join(string.Empty, value.Select(CharItems).Select(x => x.Index % 4 == 0
                 ? x.Value.First().SwapCase()
                 : x.Value.First()));
         }
