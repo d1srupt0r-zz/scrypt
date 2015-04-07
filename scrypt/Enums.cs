@@ -4,17 +4,13 @@ namespace scrypt
 {
     public static class Enums
     {
-        public enum FormatType
+        public enum Type
         {
+            None,
             Encode,
             Decode,
             Cipher,
-            Twist
-        }
-
-        public enum Orientation
-        {
-            Scramble,
+            Twist,
             Flip,
             Rot
         }

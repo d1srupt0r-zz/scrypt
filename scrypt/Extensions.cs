@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -30,6 +31,13 @@ namespace scrypt
             return list;
         }
 
+        public static string Cipher(this string value, string key = null)
+        {
+            var swap = @"[a-z]:[a-z]".ToRegex().Match(key.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var map = string.Join(string.Empty, Const.Alphabet.Split(swap).Select(g => g.Reverse())) + swap;
+            return string.Join(string.Empty, value.Swap(map));
+        }
+
         public static string Decode<T>(this T value)
         {
             return Encoding.ASCII.GetString(Convert.FromBase64String(value is Item
@@ -44,9 +52,22 @@ namespace scrypt
                 : value.ToString()));
         }
 
-        public static T Next<T>(this IList<T> list, int index)
+        public static string Flip(this string value)
         {
-            return list.Count > index + 1 ? list[index + 1] : default(T);
+            return string.Join(string.Empty, value.Reverse());
+        }
+
+        public static T Get<T>(this IList<T> list, int index)
+        {
+            return index > -1 && list.Count > index ? list[index] : default(T);
+        }
+
+        public static string Hash(this string value, string type = null)
+        {
+            using (var algorithm = HashAlgorithm.Create(type ?? string.Empty) ?? new SHA1Managed())
+            {
+                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
+            }
         }
 
         public static string Rot(this string value)
@@ -93,6 +114,41 @@ namespace scrypt
             return string.Join(string.Empty, value.Select(CharItems).Select(x => x.Index % 4 == 0
                 ? x.Value.First().SwapCase()
                 : x.Value.First()));
+        }
+
+        public static Enums.Type Type(this string value)
+        {
+            var type = Enums.Type.None;
+
+            switch (value)
+            {
+                case "/e":
+                case "/encode":
+                    type = Enums.Type.Encode;
+                    break;
+
+                case "/d":
+                case "/decode":
+                    type = Enums.Type.Decode;
+                    break;
+
+                case "/c":
+                case "/cipher":
+                    type = Enums.Type.Cipher;
+                    break;
+
+                case "/t":
+                case "/twist":
+                    type = Enums.Type.Twist;
+                    break;
+
+                case "/f":
+                case "/flip":
+                    type = Enums.Type.Flip;
+                    break;
+            }
+
+            return type;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace scrypt
 {
     public static class Const
@@ -7,7 +6,5 @@ namespace scrypt
         public const string Alphabet = @"abcdefghijklmnopqrstuvwxyz";
 
         public const string Help = @"TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlzIHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2YgdGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGludWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRoZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
-
-        public static Func<string, int, Item> StringItems = (x, i) => new Item { Value = x, Index = i };
     }
 }

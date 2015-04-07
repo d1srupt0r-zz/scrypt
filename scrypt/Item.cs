@@ -4,7 +4,7 @@
     {
         public int Index { get; set; }
 
-        public Enums.FormatType Type { get; set; }
+        public Enums.Type Type { get; set; }
 
         public string Value { get; set; }
 
@@ -12,17 +12,20 @@
         {
             switch (Type)
             {
-                case Enums.FormatType.Encode:
+                case Enums.Type.Encode:
                     return Value.Encode();
 
-                case Enums.FormatType.Decode:
+                case Enums.Type.Decode:
                     return Value.Decode();
 
-                case Enums.FormatType.Cipher:
-                    return string.Empty;
+                case Enums.Type.Cipher:
+                    return Value.Cipher();
 
-                case Enums.FormatType.Twist:
+                case Enums.Type.Twist:
                     return Value.Twist();
+
+                case Enums.Type.Flip:
+                    return Value.Flip();
 
                 default:
                     return string.Format("{0} {1}", Index, Value);
