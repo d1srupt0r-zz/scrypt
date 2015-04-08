@@ -15,15 +15,8 @@ namespace scrypt
 
             try
             {
-                args.Select((c, i) => new Item
-                {
-                    Value = c,
-                    Index = i,
-                    Type = args.Get(i - 1).Type()
-                })
-                .Where(item => item.Type != Enums.Type.None)
-                .ToList()
-                .ForEach(item => Console.WriteLine("{0} : {1}", item.ToString(), item.Value.Length));
+                var items = args.ToItems();
+                items.Format().ForEach(Console.WriteLine);
             }
             catch (Exception e)
             {

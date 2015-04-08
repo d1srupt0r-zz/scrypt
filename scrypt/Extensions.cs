@@ -9,33 +9,13 @@ namespace scrypt
 {
     public static class Extensions
     {
-        private static Func<char, int, Item> CharItems = (x, i) => new Item { Value = x.ToString(), Index = i };
+        private static Func<char, int, Item> CharItems = (value, index) => new Item { Value = value.ToString(), Index = index };
 
-        public static IEnumerable<TResult> Action<T, TResult>(this IEnumerable<T> list, Func<T, TResult> action, params string[] values)
-        {
-            if (values.Length > 0)
-                return list.Where(x => values.Contains(x is Item ? (x as Item).Value : x.ToString())).Select(action);
-            else
-                return list.Select(action);
-        }
-
-        public static IList<string> Append(this List<string> list, params string[] values)
-        {
-            list.AddRange(values.Where(s => !string.IsNullOrEmpty(s)));
-            return list;
-        }
-
-        public static IList<string> Append(this List<string> list, IEnumerable<string> values)
-        {
-            list.AddRange(values.Where(s => !string.IsNullOrEmpty(s)));
-            return list;
-        }
-
-        public static string Cipher(this string value, string key = null)
+        public static string Cipher(this string value, string key = "Z:W")
         {
             var swap = @"[a-z]:[a-z]".ToRegex().Match(key.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
-            var map = string.Join(string.Empty, Const.Alphabet.Split(swap).Select(g => g.Reverse())) + swap;
-            return string.Join(string.Empty, value.Swap(map));
+            var map = Const.Alphabet.Split(swap).SelectMany(g => g.Reverse()).String() + swap;
+            return value.Swap(map).String();
         }
 
         public static string Decode<T>(this T value)
@@ -54,7 +34,15 @@ namespace scrypt
 
         public static string Flip(this string value)
         {
-            return string.Join(string.Empty, value.Reverse());
+            return value.Reverse().String();
+        }
+
+        public static List<string> Format(this IEnumerable<Item> list)
+        {
+            if (list.Any(item => item.Value == "/t" || item.Value == "/twist"))
+                return list.Select(item => item.Value.Twist()).ToList();
+
+            return list.Select(item => item.Value).ToList();
         }
 
         public static T Get<T>(this IList<T> list, int index)
@@ -72,10 +60,35 @@ namespace scrypt
 
         public static string Rot(this string value)
         {
-            return string.Join(string.Empty, value.Select(CharItems)
+            return value.Select(CharItems)
                 .Select(x => (int)x.Value.First())
                 .Select(x => x + 13)
-                .Select(x => (char)x));
+                .Select(x => (char)x).String();
+        }
+
+        public static Func<Item, string> Selector(this string value)
+        {
+            switch (value)
+            {
+                case "/e":
+                case "/encode":
+                    return x => x.Value.Encode();
+
+                case "/d":
+                case "/decode":
+                    return x => x.Value.Decode();
+
+                case "/c":
+                case "/cipher":
+                    return x => x.Value.Cipher();
+
+                case "/h":
+                case "/hash":
+                    return x => x.Value.Hash("md5");
+
+                default:
+                    return new Func<Item, string>(x => x.Value);
+            }
         }
 
         public static IEnumerable<string> Split(this string value, int size)
@@ -84,6 +97,11 @@ namespace scrypt
                 .Select(item => value.Substring(item.Index, item.Index + size > value.Length
                     ? value.Length - item.Index
                     : size));
+        }
+
+        public static string String<T>(this IEnumerable<T> list, string separator = null)
+        {
+            return string.Join(separator ?? string.Empty, list);
         }
 
         public static IEnumerable<char> Swap(this string value, string key)
@@ -104,6 +122,16 @@ namespace scrypt
             return char.IsUpper(value) ? char.ToLower(value) : char.ToUpper(value);
         }
 
+        public static IEnumerable<Item> ToItems(this IList<string> list)
+        {
+            return list.Select((value, index) => new Item
+            {
+                Value = value,
+                Index = index,
+                Convert = list.Get(index - 1).Selector()
+            });
+        }
+
         public static Regex ToRegex(this string value)
         {
             return new Regex(@value, RegexOptions.Compiled);
@@ -111,44 +139,9 @@ namespace scrypt
 
         public static string Twist(this string value)
         {
-            return string.Join(string.Empty, value.Select(CharItems).Select(x => x.Index % 4 == 0
+            return value.Select(CharItems).Select(x => x.Index % 4 == 0
                 ? x.Value.First().SwapCase()
-                : x.Value.First()));
-        }
-
-        public static Enums.Type Type(this string value)
-        {
-            var type = Enums.Type.None;
-
-            switch (value)
-            {
-                case "/e":
-                case "/encode":
-                    type = Enums.Type.Encode;
-                    break;
-
-                case "/d":
-                case "/decode":
-                    type = Enums.Type.Decode;
-                    break;
-
-                case "/c":
-                case "/cipher":
-                    type = Enums.Type.Cipher;
-                    break;
-
-                case "/t":
-                case "/twist":
-                    type = Enums.Type.Twist;
-                    break;
-
-                case "/f":
-                case "/flip":
-                    type = Enums.Type.Flip;
-                    break;
-            }
-
-            return type;
+                : x.Value.First()).String();
         }
     }
 }

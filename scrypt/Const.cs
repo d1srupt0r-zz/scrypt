@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace scrypt
 {
     public static class Const
