@@ -18,6 +18,27 @@ namespace scrypt
             return value.Swap(map).String();
         }
 
+        public static Func<Item, string> Converter(this string value)
+        {
+            switch (value)
+            {
+                case "/e":
+                case "/encode":
+                    return x => x.Value.Encode();
+
+                case "/d":
+                case "/decode":
+                    return x => x.Value.Decode();
+
+                case "/c":
+                case "/cipher":
+                    return x => x.Value.Cipher();
+
+                default:
+                    return new Func<Item, string>(x => x.Value);
+            }
+        }
+
         public static string Decode<T>(this T value)
         {
             return Encoding.ASCII.GetString(Convert.FromBase64String(value is Item
@@ -40,9 +61,9 @@ namespace scrypt
         public static List<string> Format(this IEnumerable<Item> list)
         {
             if (list.Any(item => item.Value == "/t" || item.Value == "/twist"))
-                return list.Select(item => item.Value.Twist()).ToList();
+                return list.Select(item => item.ToString().Twist()).ToList();
 
-            return list.Select(item => item.Value).ToList();
+            return list.Select(item => item.ToString()).ToList();
         }
 
         public static T Get<T>(this IList<T> list, int index)
@@ -64,31 +85,6 @@ namespace scrypt
                 .Select(x => (int)x.Value.First())
                 .Select(x => x + 13)
                 .Select(x => (char)x).String();
-        }
-
-        public static Func<Item, string> Selector(this string value)
-        {
-            switch (value)
-            {
-                case "/e":
-                case "/encode":
-                    return x => x.Value.Encode();
-
-                case "/d":
-                case "/decode":
-                    return x => x.Value.Decode();
-
-                case "/c":
-                case "/cipher":
-                    return x => x.Value.Cipher();
-
-                case "/h":
-                case "/hash":
-                    return x => x.Value.Hash("md5");
-
-                default:
-                    return new Func<Item, string>(x => x.Value);
-            }
         }
 
         public static IEnumerable<string> Split(this string value, int size)
@@ -128,7 +124,9 @@ namespace scrypt
             {
                 Value = value,
                 Index = index,
-                Convert = list.Get(index - 1).Selector()
+                Convert = value.StartsWith("/")
+                    ? x => x.Value
+                    : list.Get(index - 1).Converter()
             });
         }
 
