@@ -18,27 +18,6 @@ namespace scrypt
             return value.Swap(map).String();
         }
 
-        public static Func<Item, string> Converter(this string value)
-        {
-            switch (value)
-            {
-                case "/e":
-                case "/encode":
-                    return x => x.Value.Encode();
-
-                case "/d":
-                case "/decode":
-                    return x => x.Value.Decode();
-
-                case "/c":
-                case "/cipher":
-                    return x => x.Value.Cipher();
-
-                default:
-                    return new Func<Item, string>(x => x.Value);
-            }
-        }
-
         public static string Decode<T>(this T value)
         {
             return Encoding.ASCII.GetString(Convert.FromBase64String(value is Item
@@ -58,15 +37,7 @@ namespace scrypt
             return value.Reverse().String();
         }
 
-        public static List<string> Format(this IEnumerable<Item> list)
-        {
-            if (list.Any(item => item.Value == "/t" || item.Value == "/twist"))
-                return list.Select(item => item.ToString().Twist()).ToList();
-
-            return list.Select(item => item.ToString()).ToList();
-        }
-
-        public static T Get<T>(this IList<T> list, int index)
+        public static T Get<T>(this IList<T> list, int index) where T : class
         {
             return index > -1 && list.Count > index ? list[index] : default(T);
         }
@@ -79,12 +50,28 @@ namespace scrypt
             }
         }
 
-        public static string Rot(this string value)
+        public static Func<Item, string> Selector(this string value)
         {
-            return value.Select(CharItems)
-                .Select(x => (int)x.Value.First())
-                .Select(x => x + 13)
-                .Select(x => (char)x).String();
+            switch (value)
+            {
+                case "/e":
+                case "/encode":
+                    return x => x.Value.Encode();
+
+                case "/d":
+                case "/decode":
+                    return x => x.Value.Decode();
+
+                case "/c":
+                case "/cipher":
+                    return x => x.Value.Cipher();
+
+                case "/h":
+                case "/hash":
+                    return x => x.Value.Hash();
+            }
+
+            return null;
         }
 
         public static IEnumerable<string> Split(this string value, int size)
@@ -113,21 +100,19 @@ namespace scrypt
             }
         }
 
-        public static char SwapCase(this char value)
+        public static char ToggleCase(this char value)
         {
             return char.IsUpper(value) ? char.ToLower(value) : char.ToUpper(value);
         }
 
-        public static IEnumerable<Item> ToItems(this IList<string> list)
+        public static List<Item> ToItems(this IList<string> list)
         {
             return list.Select((value, index) => new Item
             {
                 Value = value,
                 Index = index,
-                Convert = value.StartsWith("/")
-                    ? x => x.Value
-                    : list.Get(index - 1).Converter()
-            });
+                Convert = list.Get(index - 1).Selector()
+            }).ToList();
         }
 
         public static Regex ToRegex(this string value)
@@ -138,7 +123,7 @@ namespace scrypt
         public static string Twist(this string value)
         {
             return value.Select(CharItems).Select(x => x.Index % 4 == 0
-                ? x.Value.First().SwapCase()
+                ? x.Value.First().ToggleCase()
                 : x.Value.First()).String();
         }
     }

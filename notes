@@ -1,0 +1,9 @@
+https://marc-stevens.nl/p/hashclash/buildinstructions.php
+
+for (int i = 0; i < hexString.Length; i += 2)
+{
+    string hs = hexString.Substring(i, 2);
+    sb.Append(Convert.ToChar(Convert.ToUInt32(hs, 16)));
+}
+
+b8ca3a7a130bfc9947dba4460800450000e260f640006606444541346c219871291401bbcc8ed302de6dc918c01d50180200ccc10000140303005065678b9069e2d83b373c8a480ce29fe7d2d83582c3a6b86461f366bbec22b17bac30d5cd242ae0950c701f6e0693d9d7becf8ad32ce5845e566345435ef78b2e66e3d78834920ffe22fabe090bba705c1603030060d4bdae6cc74c6f5f71066a6823bf8a6f52d95c9407fc753bffd5befcf661b8d7abd39e2885aae1a39483e8a411b8cc0cbeb5a509f3492d450425379b7efdcdb703bf3b1d7ca34d23a193693717f7669abb85262ff9c47dce62b1dab23147c273

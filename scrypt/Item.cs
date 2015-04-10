@@ -12,7 +12,7 @@ namespace scrypt
 
         public override string ToString()
         {
-            return Convert(this);
+            return Convert != null ? Convert(this) : this.Value;
         }
     }
 }

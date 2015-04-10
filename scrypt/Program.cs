@@ -1,4 +1,5 @@
-﻿using System;
+﻿using scrypt.CommandLine;
+using System;
 using System.Linq;
 
 namespace scrypt
@@ -9,14 +10,18 @@ namespace scrypt
         {
             if (args.Length == 0)
             {
-                Console.WriteLine(Const.Help);
+                Console.WriteLine(Const.Example);
+                return;
+            }
+
+            if (args.Contains("/help"))
+            {
+                Options.List.ForEach(Console.WriteLine);
                 return;
             }
 
             try
             {
-                var items = args.ToItems();
-                items.Format().ForEach(Console.WriteLine);
             }
             catch (Exception e)
             {
