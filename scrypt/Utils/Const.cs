@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace scrypt
+﻿namespace scrypt.Utils
 {
     public static class Const
     {

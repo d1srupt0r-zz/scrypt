@@ -1,4 +1,5 @@
 ﻿using scrypt.CommandLine;
+using scrypt.Utils;
 using System;
 using System.Linq;
 
@@ -14,14 +15,26 @@ namespace scrypt
                 return;
             }
 
-            if (args.Contains("/help"))
-            {
-                Options.List.ForEach(Console.WriteLine);
-                return;
-            }
-
             try
             {
+                if (args.Contains("/help"))
+                {
+                    Options.List.ForEach(Console.WriteLine);
+                    return;
+                }
+
+                var input = Console.IsInputRedirected ? Console.ReadLine() : args.FirstOrDefault(arg => !arg.StartsWith("/"));
+                string key = null;
+
+                if (args.Contains("/c") || args.Contains("/h"))
+                {
+                    Console.Write("Key (enter for Z:W): ");
+                    var k = Console.ReadLine();
+                    key = string.IsNullOrEmpty(k) ? "Z:W" : k;
+                }
+
+                var cmdlist = Options.List.Where(option => option.Cmds.Intersect(args).Any());
+                cmdlist.ToList().ForEach(x => Console.WriteLine("{0}", x.Method(input, key)));
             }
             catch (Exception e)
             {

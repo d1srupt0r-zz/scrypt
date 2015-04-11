@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace scrypt
+namespace scrypt.Utils
 {
-    public static class Enums
+    public class Enums
     {
         public static T GetEnumValue<T>(string value)
         {

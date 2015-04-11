@@ -1,17 +1,18 @@
-﻿using System;
+﻿using scrypt.CommandLine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace scrypt
+namespace scrypt.Utils
 {
     public static class Extensions
     {
         private static Func<char, int, Item> CharItems = (value, index) => new Item { Value = value.ToString(), Index = index };
 
-        public static string Cipher(this string value, string key = "Z:W")
+        public static string Cipher(this string value, string key = null)
         {
             var swap = @"[a-z]:[a-z]".ToRegex().Match(key.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
             var map = Const.Alphabet.Split(swap).SelectMany(g => g.Reverse()).String() + swap;

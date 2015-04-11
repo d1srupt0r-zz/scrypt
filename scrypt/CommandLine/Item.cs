@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace scrypt
+namespace scrypt.CommandLine
 {
     public class Item
     {
