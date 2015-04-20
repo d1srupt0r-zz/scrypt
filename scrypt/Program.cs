@@ -1,6 +1,7 @@
 ﻿using scrypt.CommandLine;
 using scrypt.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace scrypt
@@ -23,18 +24,11 @@ namespace scrypt
                     return;
                 }
 
-                var input = Console.IsInputRedirected ? Console.ReadLine() : args.FirstOrDefault(arg => !arg.StartsWith("/"));
-                string key = null;
+                var text = new List<string>();
+                var cmds = new List<string>();
+                //args.Split(text, cmds);
 
-                if (args.Contains("/c") || args.Contains("/h"))
-                {
-                    Console.Write("Key (enter for Z:W): ");
-                    var k = Console.ReadLine();
-                    key = string.IsNullOrEmpty(k) ? "Z:W" : k;
-                }
-
-                var cmdlist = Options.List.Where(option => option.Cmds.Intersect(args).Any());
-                cmdlist.ToList().ForEach(x => Console.WriteLine("{0}", x.Method(input, key)));
+                Scrypt(text, cmds);
             }
             catch (Exception e)
             {
@@ -43,6 +37,35 @@ namespace scrypt
                 Console.Error.WriteLine(e.StackTrace);
 #endif
             }
+        }
+
+        public static void Parse(string[] args)
+        {
+            var text = new List<string>();
+            var cmds = new Stack<Param>();
+
+            foreach (var arg in args)
+            {
+                if (arg.StartsWith("/"))
+                    cmds.Push (Options.List.FirstOrDefault(x => x.Cmds.Contains(arg)));
+                else
+                    text.Add(arg);
+            }
+        }
+
+        public static void Scrypt(IList<string> text, IList<string> cmds)
+        {
+            string key = null;
+
+            var input = string.Empty;
+
+            if (cmds.Contains("/c") || cmds.Contains("/h"))
+            {
+                Console.Write("Key: ");
+                key = Console.ReadLine();
+            }
+
+            //cmds.OrderBy(x => x.Order).Select(x => x.Method(input, key)).ToList().ForEach(Console.WriteLine);
         }
     }
 }

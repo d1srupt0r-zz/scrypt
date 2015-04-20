@@ -14,7 +14,8 @@ namespace scrypt.Utils
 
         public static string Cipher(this string value, string key = null)
         {
-            var swap = @"[a-z]:[a-z]".ToRegex().Match(key.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var k = string.IsNullOrEmpty(key) ? "Z:W" : key;
+            var swap = @"[a-z]:[a-z]".ToRegex().Match(k.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
             var map = Const.Alphabet.Split(swap).SelectMany(g => g.Reverse()).String() + swap;
             return value.Swap(map).String();
         }
@@ -51,30 +52,6 @@ namespace scrypt.Utils
             }
         }
 
-        public static Func<Item, string> Selector(this string value)
-        {
-            switch (value)
-            {
-                case "/e":
-                case "/encode":
-                    return x => x.Value.Encode();
-
-                case "/d":
-                case "/decode":
-                    return x => x.Value.Decode();
-
-                case "/c":
-                case "/cipher":
-                    return x => x.Value.Cipher();
-
-                case "/h":
-                case "/hash":
-                    return x => x.Value.Hash();
-            }
-
-            return null;
-        }
-
         public static IEnumerable<string> Split(this string value, int size)
         {
             return value.Select(CharItems).Where(item => item.Index % size == 0)
@@ -104,16 +81,6 @@ namespace scrypt.Utils
         public static char ToggleCase(this char value)
         {
             return char.IsUpper(value) ? char.ToLower(value) : char.ToUpper(value);
-        }
-
-        public static List<Item> ToItems(this IList<string> list)
-        {
-            return list.Select((value, index) => new Item
-            {
-                Value = value,
-                Index = index,
-                Convert = list.Get(index - 1).Selector()
-            }).ToList();
         }
 
         public static Regex ToRegex(this string value)

@@ -11,7 +11,7 @@ namespace scrypt.CommandLine
 
         public Func<string, string, string> Method { get; set; }
 
-        public string Name { get; set; }
+        public short Order { get; set; }
 
         public Param(string[] cmds, string help)
         {
@@ -25,6 +25,14 @@ namespace scrypt.CommandLine
             Help = help;
             Method = method;
             Cmds = cmds;
+        }
+
+        public Param(short order, string[] cmds, Func<string, string, string> method, string help)
+        {
+            Help = help;
+            Method = method;
+            Cmds = cmds;
+            Order = order;
         }
 
         public override string ToString()
