@@ -12,6 +12,14 @@ namespace scrypt.Utils
     {
         private static Func<char, int, Item> CharItems = (value, index) => new Item { Value = value.ToString(), Index = index };
 
+        public static IList<T> Append<T>(this IList<T> list, T value) where T : class
+        {
+            if (value != null)
+                list.Add(value);
+
+            return list;
+        }
+
         public static string Cipher(this string value, string key = null)
         {
             var k = string.IsNullOrEmpty(key) ? "Z:W" : key;

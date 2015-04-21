@@ -24,11 +24,9 @@ namespace scrypt
                     return;
                 }
 
-                var text = new List<string>();
-                var cmds = new List<string>();
-                //args.Split(text, cmds);
-
-                Scrypt(text, cmds);
+                var @params = new List<Param>();
+                var input = new List<string>();
+                //input.SelectMany(x => @params.OrderBy(o => o.Order).Select(o => o.Method(x, null)));
             }
             catch (Exception e)
             {
@@ -39,31 +37,22 @@ namespace scrypt
             }
         }
 
-        public static void Parse(string[] args)
+        public static IEnumerable<T> Parse<T>(string[] args)
         {
-            var text = new List<string>();
-            var cmds = new Stack<Param>();
-
-            foreach (var arg in args)
-            {
-                if (arg.StartsWith("/"))
-                    cmds.Push (Options.List.FirstOrDefault(x => x.Cmds.Contains(arg)));
-                else
-                    text.Add(arg);
-            }
+            return null;
         }
 
-        public static void Scrypt(IList<string> text, IList<string> cmds)
+        public static void Scrypt(IEnumerable<Param> @params)
         {
             string key = null;
 
             var input = string.Empty;
 
-            if (cmds.Contains("/c") || cmds.Contains("/h"))
+            /*if (@params)
             {
                 Console.Write("Key: ");
                 key = Console.ReadLine();
-            }
+            }*/
 
             //cmds.OrderBy(x => x.Order).Select(x => x.Method(input, key)).ToList().ForEach(Console.WriteLine);
         }

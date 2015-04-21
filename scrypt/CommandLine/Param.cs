@@ -13,26 +13,29 @@ namespace scrypt.CommandLine
 
         public short Order { get; set; }
 
+        public Enums.ParamType Type { get; set; }
+
         public Param(string[] cmds, string help)
         {
-            Help = help;
-            Method = (x, k) => x;
             Cmds = cmds;
+            Method = (x, k) => x;
+            Help = help;
         }
 
         public Param(string[] cmds, Func<string, string, string> method, string help)
         {
-            Help = help;
-            Method = method;
             Cmds = cmds;
+            Method = method;
+            Help = help;
         }
 
-        public Param(short order, string[] cmds, Func<string, string, string> method, string help)
+        public Param(short order, string[] cmds, Func<string, string, string> method, string help, Enums.ParamType type)
         {
-            Help = help;
-            Method = method;
-            Cmds = cmds;
             Order = order;
+            Cmds = cmds;
+            Method = method;
+            Help = help;
+            Type = type;
         }
 
         public override string ToString()

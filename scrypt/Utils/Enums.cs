@@ -4,6 +4,13 @@ namespace scrypt.Utils
 {
     public class Enums
     {
+        public enum ParamType
+        {
+            Command,
+            Crypto,
+            Text
+        }
+
         public static T GetEnumValue<T>(string value)
         {
             return Enum.IsDefined(typeof(T), value) ? (T)Enum.Parse(typeof(T), value) : default(T);
