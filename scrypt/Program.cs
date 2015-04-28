@@ -24,8 +24,7 @@ namespace scrypt
                     return;
                 }
 
-                var @params = new List<Param>();
-                var input = new List<string>();
+                var @params = Parse<Param>(args);
                 //input.SelectMany(x => @params.OrderBy(o => o.Order).Select(o => o.Method(x, null)));
             }
             catch (Exception e)
@@ -39,6 +38,12 @@ namespace scrypt
 
         public static IEnumerable<T> Parse<T>(string[] args)
         {
+            var data = string.Join(" ", args);
+
+            var cmds = @"/\S(?=\s[^/%])".ToRegex().Matches(data);
+            var triggers = @"/\S(?=(\s/|$))".ToRegex().Matches(data);
+            var text = @"[^-/]\w+".ToRegex().Matches(data);
+
             return null;
         }
 
