@@ -7,8 +7,8 @@ namespace scrypt.Utils
         public enum ParamType
         {
             Command,
-            Crypto,
-            Text
+            Trigger,
+            Crypto
         }
 
         public static T GetEnumValue<T>(string value)
