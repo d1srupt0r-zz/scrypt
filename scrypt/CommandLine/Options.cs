@@ -8,7 +8,6 @@ namespace scrypt.CommandLine
     {
         public static List<Param> List = new List<Param> {
             new Param(new [] { "/help" }, "Display [h]elp")
-            ,new Param(new [] { "/v", "/verbose" }, "Display [v]erbose output")
             ,new Param(0, new [] { "/e", "/encode" }, (x, k) => x.Encode(), "Base64 [e]ncode text", Enums.ParamType.Command)
             ,new Param(1, new [] { "/d", "/decode" }, (x, k) => x.Decode(), "Base64 [d]ecode text", Enums.ParamType.Command)
             ,new Param(2, new [] { "/f", "/flip" }, (x, k) => x.Flip(), "Execute character [f]lip on text", Enums.ParamType.Trigger)
@@ -19,7 +18,8 @@ namespace scrypt.CommandLine
 
         public static IEnumerable<Param> GetAll(params string[] values)
         {
-            return values.SelectMany(value => List.Where(param => param.Cmds.Contains(value))).OrderBy(o => o.Order);
+            return values.SelectMany(value => List.Where(param => param.Cmds.Contains(value)))
+                .OrderBy(o => o.Order);
         }
     }
 }

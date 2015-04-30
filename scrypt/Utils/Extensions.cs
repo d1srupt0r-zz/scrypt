@@ -96,6 +96,13 @@ namespace scrypt.Utils
             return new Regex(@value, RegexOptions.Compiled);
         }
 
+        public static Stack<T> ToStack<T>(this IEnumerable<T> list)
+        {
+            var stack = new Stack<T>();
+            list.ToList().ForEach(item => stack.Push(item));
+            return stack;
+        }
+
         public static string Twist(this string value)
         {
             return value.Select(CharItems).Select(x => x.Index % 4 == 0
