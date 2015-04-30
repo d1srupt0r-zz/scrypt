@@ -7,27 +7,32 @@ VGhpcyBpcyBhIEJhc2U2NCBzdHJpbmcgYnVpbHQgdXNpbmcgdGhpcyB0b29sLg==
 ```
 
 # Examples
+To get [h]elp use:
+```
+script /help
+```
+
 To [e]ncode and [d]ecode use:
 ```
 scrypt /e "Hello World!"
 scrypt /d SGVsbG8gV29ybGQh
 ```
 
-To [h]ash use (default is sha1):
+To [h]ash use (default is key sha1):
 ```
-scrypt /e "Hello World!" /h md5
+scrypt /e "Hello World!" /h
 ```
 
-To [t]wist the text around use (default is Scramble):
+To [t]wist the text around use:
 ```
 scrypt /e "Hello World!" /t
 ```
-To quickly "flip" the output use:
+To [f]lip the output use:
 ```
-scrypt /e "Hello World!" /t Flip
+scrypt /e "Hello World!" /f
 ```
 
-To de[c]ipher a string use (default [k]ey is Z:W):
+To de[c]ipher a string use (default key is Z:W):
 ```
-script /c "Zori v drterc irrsd ch ur lrgc" /k Z:W
+script /c "Drterc cryc" /k Z:W
 ```

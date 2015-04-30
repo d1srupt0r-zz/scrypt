@@ -19,7 +19,8 @@ namespace scrypt
 
         public static void Main(string[] args)
         {
-            var options = Options.GetAll(args);
+            var p = Parse(args);
+            var options = Options.GetAll(p);
 
             if (args.Length == 0)
                 Cout(ConsoleColor.Blue, true, Const.Example);
@@ -59,6 +60,11 @@ namespace scrypt
             }
 
             return null;
+        }
+
+        private static string[] Parse(params string[] values)
+        {
+            return values.Select(x => @"(--|-)".ToRegex().Replace(x, "/")).ToArray();
         }
 
         private static void Process(IEnumerable<Param> options, IList<string> values)
