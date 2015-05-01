@@ -53,7 +53,9 @@ namespace scrypt
                             break;
 
                         case Enums.ParamType.Crypto:
-                            var key = Terminal.In("'{0}' {1} key ", values[i], option.Cmds.Last());
+                            var key = Terminal.In("'{0}' {1} key ", values[i].Length > 30
+                                ? values[i].Substring(0, 30) + "..."
+                                : values[i], option.Cmds.Last());
                             values[i] = option.Method(values[i], key);
                             break;
                     }
