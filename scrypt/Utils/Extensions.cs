@@ -103,6 +103,11 @@ namespace scrypt.Utils
             return array.Select(x => pattern.ToRegex().Replace(x.ToString(), replacement)).Cast<T>().ToArray();
         }
 
+        public static T[] ReplaceAll<T>(this T[] array, string pattern, Func<T, T> action)
+        {
+            return array.Select(x => pattern.ToRegex().IsMatch(x.ToString()) ? action(x) : x).ToArray();
+        }
+
         public static IEnumerable<string> Split(this string value, int size)
         {
             return value.Select(CharItems).Where(item => item.Index % size == 0)

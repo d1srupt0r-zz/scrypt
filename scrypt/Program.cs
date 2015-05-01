@@ -18,6 +18,7 @@ namespace scrypt
             {
                 var junk = args.String()
                     .Split(args.Parse(Const.CommandPrefix + @"\S+"), StringSplitOptions.RemoveEmptyEntries)
+                    .ReplaceAll(Const.AliasPrefix, Const.GetValue)
                     .ToList()
                     .Append(Console.IsInputRedirected ? Console.ReadLine() : null);
 

@@ -1,6 +1,4 @@
-﻿using scrypt.Utils;
-using System;
-using System.Linq;
+﻿using System;
 
 namespace scrypt.CommandLine
 {
@@ -26,11 +24,6 @@ namespace scrypt.CommandLine
             return null;
         }
 
-        public static void Out(ConsoleColor color, params object[] args)
-        {
-            Out(color, "{0}", args);
-        }
-
         public static void Out(ConsoleColor color, string format, params object[] args)
         {
             Out(color, true, format, args);
@@ -38,13 +31,13 @@ namespace scrypt.CommandLine
 
         public static void Out(ConsoleColor color, bool writeLine, string format, params object[] args)
         {
-            var c = Console.ForegroundColor;
+            var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
             if (writeLine)
                 Console.WriteLine(format, args);
             else
                 Console.Write(format, args);
-            Console.ForegroundColor = c;
+            Console.ForegroundColor = oldColor;
         }
     }
 }
