@@ -43,3 +43,8 @@ To [c]ipher use:
 ```
 script /c "Drterc cryc"
 ```
+
+To output an alias use:
+```
+script "#alphabet"
+```

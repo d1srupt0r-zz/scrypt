@@ -14,6 +14,9 @@ namespace scrypt
                 Terminal.Out(ConsoleColor.Blue, Const.Example);
             else if (args.Exists(Const.CommandPrefix, "help"))
                 Options.List.ForEach(o => Terminal.Out(ConsoleColor.Yellow, o.ToString()));
+            else if (args.Exists(Const.CommandPrefix, "#"))
+                Const.GetAll().ForEach(f => Terminal.Out(ConsoleColor.DarkGreen, "{0}{1}\t{2}",
+                    "#", f.Name.ToLower(), "..."));
             else
             {
                 var junk = args.String()
