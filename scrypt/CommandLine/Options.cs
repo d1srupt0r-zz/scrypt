@@ -17,9 +17,9 @@ namespace scrypt.CommandLine
             ,new Param(5, new [] { "/h", "/hash" }, (x, k) => x.Hash(k), "Execute [h]ash algorithm on text (default sha1)", Enums.ParamType.Crypto)
         };
 
-        public static IEnumerable<Param> GetAll(params string[] values)
+        public static IEnumerable<Param> GetAll(params string[] args)
         {
-            return values.Select(value => @"(--|-)".ToRegex().Replace(value, "/"))
+            return args.ReplaceAll(@"(--|-)", "/")
                 .SelectMany(value => List.Where(param => param.Cmds.Contains(value)))
                 .OrderBy(o => o.Order);
         }

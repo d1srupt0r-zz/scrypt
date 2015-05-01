@@ -22,9 +22,10 @@ namespace scrypt.Utils
 
         public static string Cipher(this string value, string key = null)
         {
-            var k = @"[a-z]:[a-z]".ToRegex().IsMatch(key.ToLower())
-                .Default(key.ToLower(), "Z:W", "Cipher format 'A:Z', defaulting to Z:W");
-            var swap = k.Split(':').Select(x => char.Parse(x)).Min();
+            var k = key == null ? string.Empty : key.ToLower();
+            var swap = char.ToLower(@"[a-z]:[a-z]".ToRegex().IsMatch(k)
+                .Default(k, "Z:W", "Cipher format 'A:Z', defaulting to Z:W")
+                .Split(':').Select(x => char.Parse(x)).Min());
             var map = Const.Alphabet.Split(swap).SelectMany(g => g.Reverse()).String() + swap;
             return value.Swap(map).String();
         }
@@ -42,7 +43,7 @@ namespace scrypt.Utils
                 return onTrue(value);
             else
             {
-                Terminal.Out(ConsoleColor.DarkRed, "{0}", message);
+                Terminal.Out(ConsoleColor.DarkRed, message);
                 return default(TResult);
             }
         }
@@ -53,7 +54,7 @@ namespace scrypt.Utils
                 return trueValue;
             else
             {
-                Terminal.Out(ConsoleColor.DarkRed, "{0}", message);
+                Terminal.Out(ConsoleColor.DarkRed, message);
                 return falseValue;
             }
         }
@@ -63,6 +64,12 @@ namespace scrypt.Utils
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(value is Item
                 ? (value as Item).Value
                 : value.ToString()));
+        }
+
+        public static bool Exists<T>(this T[] array, string pattern, params string[] values)
+        {
+            var r = string.Format(values.Length > 0 ? "{0}({1})" : "{0}", pattern, string.Join(" |", values));
+            return r.ToRegex().Matches(array.String()).Count > 0;
         }
 
         public static string Flip(this string value)
@@ -79,11 +86,21 @@ namespace scrypt.Utils
         {
             using (var algorithm = HashAlgorithm.Create(type ?? string.Empty))
             {
-                var a = (algorithm != null).Default(algorithm, new SHA1Managed(), "Invalid Hash Algorithm, defaulting to SHA1");
+                var a = (algorithm != null).Default(algorithm, new SHA1Managed(), "No Hash Algorithm found, defaulting to SHA1");
                 return !string.IsNullOrEmpty(value)
                     ? Convert.ToBase64String(a.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1))
                     : string.Empty;
             }
+        }
+
+        public static T[] Parse<T>(this T[] array, string pattern)
+        {
+            return array.Where(x => pattern.ToRegex().IsMatch(x.ToString())).ToArray();
+        }
+
+        public static T[] ReplaceAll<T>(this T[] array, string pattern, string replacement = "")
+        {
+            return array.Select(x => pattern.ToRegex().Replace(x.ToString(), replacement)).Cast<T>().ToArray();
         }
 
         public static IEnumerable<string> Split(this string value, int size)

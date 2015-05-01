@@ -12,15 +12,25 @@ namespace scrypt
         {
             if (args.Length == 0)
                 Terminal.Out(ConsoleColor.Blue, Const.Example);
-            else if (args.Contains("/help"))
+            else if (args.Exists(Const.CommandPrefix, "help"))
                 Options.List.ForEach(o => Terminal.Out(ConsoleColor.Yellow, o.ToString()));
             else
             {
-                var junk = args.String().Split(Terminal.Parse(args), StringSplitOptions.RemoveEmptyEntries).ToList()
+                var junk = args.String()
+                    .Split(args.Parse(Const.CommandPrefix + @"\S+"), StringSplitOptions.RemoveEmptyEntries)
+                    .ToList()
                     .Append(Console.IsInputRedirected ? Console.ReadLine() : null);
 
-                var verbose = Terminal.Exists(args, "v", "verbose");
-                Process(Options.GetAll(args), junk, verbose);
+                var verbose = args.Exists(Const.CommandPrefix, "verbose", "v");
+
+                try { Process(Options.GetAll(args), junk, verbose); }
+                catch (Exception e)
+                {
+                    Terminal.Out(ConsoleColor.Red, e.Message);
+#if DEBUG
+                    Terminal.Out(ConsoleColor.DarkGray, e.StackTrace);
+#endif
+                }
 
                 junk.ToList().ForEach(j => Terminal.Out(ConsoleColor.Green, verbose ? "{0} : {1}" : "{0}", j, j.Length));
             }

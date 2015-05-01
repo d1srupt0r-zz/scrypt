@@ -15,41 +15,36 @@ namespace scrypt.CommandLine
             }
         }
 
-        public static string In(string format, string value, string name)
+        public static string In(string format, params object[] args)
         {
             if (!Console.IsInputRedirected)
             {
-                Out(ConsoleColor.DarkGray, false, format, value, name);
+                Out(ConsoleColor.DarkGray, false, format, args);
                 return Console.ReadLine();
             }
 
             return null;
         }
 
-        public static void Out(ConsoleColor color, string format, params object[] values)
+        public static void Out(ConsoleColor color, params object[] args)
         {
-            Out(color, true, format, values);
+            Out(color, "{0}", args);
         }
 
-        public static void Out(ConsoleColor color, bool writeLine, string format, params object[] values)
+        public static void Out(ConsoleColor color, string format, params object[] args)
+        {
+            Out(color, true, format, args);
+        }
+
+        public static void Out(ConsoleColor color, bool writeLine, string format, params object[] args)
         {
             var c = Console.ForegroundColor;
             Console.ForegroundColor = color;
             if (writeLine)
-                Console.WriteLine(format, values);
+                Console.WriteLine(format, args);
             else
-                Console.Write(format, values);
+                Console.Write(format, args);
             Console.ForegroundColor = c;
-        }
-
-        public static bool Exists(string[] args, params string[] values)
-        {
-            return values.Any(value => args.Any(x => (@"[-/]" + value).ToRegex().IsMatch(x)));
-        }
-
-        public static string[] Parse(params string[] args)
-        {
-            return args.Where(x => @"[-/]\S+".ToRegex().IsMatch(x)).ToArray();
         }
     }
 }
