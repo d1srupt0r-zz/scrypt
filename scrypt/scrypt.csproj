@@ -41,10 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLine\Terminal.cs" />
     <Compile Include="CommandLine\Options.cs" />
     <Compile Include="CommandLine\Param.cs" />
     <Compile Include="Utils\Const.cs" />
-    <Compile Include="CommandLine\Item.cs" />
+    <Compile Include="Utils\Item.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Utils\Enums.cs" />
     <Compile Include="Utils\Extensions.cs" />

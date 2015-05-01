@@ -6,6 +6,7 @@ namespace scrypt.Utils
     {
         public enum ParamType
         {
+            None,
             Command,
             Trigger,
             Crypto

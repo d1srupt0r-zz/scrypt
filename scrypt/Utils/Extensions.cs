@@ -22,17 +22,40 @@ namespace scrypt.Utils
 
         public static string Cipher(this string value, string key = null)
         {
-            var k = string.IsNullOrEmpty(key) ? "Z:W" : key;
-            var swap = @"[a-z]:[a-z]".ToRegex().Match(k.ToLower()).Value.Split(':').Select(x => char.Parse(x)).Min();
+            var k = @"[a-z]:[a-z]".ToRegex().IsMatch(key.ToLower())
+                .Default(key.ToLower(), "Z:W", "Cipher format 'A:Z', defaulting to Z:W");
+            var swap = k.Split(':').Select(x => char.Parse(x)).Min();
             var map = Const.Alphabet.Split(swap).SelectMany(g => g.Reverse()).String() + swap;
             return value.Swap(map).String();
         }
 
         public static string Decode<T>(this T value)
         {
-            return Encoding.ASCII.GetString(Convert.FromBase64String(value is Item
-                ? (value as Item).Value
-                : value.ToString()));
+            var bytes = @"[a-zA-Z0-9+/]{4}".ToRegex().IsMatch(value.ToString())
+                .Default(value.ToString(), Convert.FromBase64String, "Invalid Base64 string");
+            return bytes != null ? Encoding.ASCII.GetString(bytes) : value.ToString();
+        }
+
+        public static TResult Default<TResult>(this bool condition, string value, Func<string, TResult> onTrue, string message)
+        {
+            if (condition)
+                return onTrue(value);
+            else
+            {
+                Terminal.Out(ConsoleColor.DarkRed, "{0}", message);
+                return default(TResult);
+            }
+        }
+
+        public static T Default<T>(this bool condition, T trueValue, T falseValue, string message)
+        {
+            if (condition)
+                return trueValue;
+            else
+            {
+                Terminal.Out(ConsoleColor.DarkRed, "{0}", message);
+                return falseValue;
+            }
         }
 
         public static string Encode<T>(this T value)
@@ -54,9 +77,12 @@ namespace scrypt.Utils
 
         public static string Hash(this string value, string type = null)
         {
-            using (var algorithm = HashAlgorithm.Create(type ?? string.Empty) ?? new SHA1Managed())
+            using (var algorithm = HashAlgorithm.Create(type ?? string.Empty))
             {
-                return string.IsNullOrEmpty(value) ? string.Empty : Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1));
+                var a = (algorithm != null).Default(algorithm, new SHA1Managed(), "Invalid Hash Algorithm, defaulting to SHA1");
+                return !string.IsNullOrEmpty(value)
+                    ? Convert.ToBase64String(a.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1))
+                    : string.Empty;
             }
         }
 

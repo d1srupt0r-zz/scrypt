@@ -8,71 +8,33 @@ namespace scrypt
 {
     public class Program
     {
-        private static ConsoleColor RandomColor
-        {
-            get
-            {
-                var r = new Random(Environment.TickCount).Next(14) + 1;
-                return ((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor)))[r];
-            }
-        }
-
         public static void Main(string[] args)
         {
-            var p = Parse(args);
-            var options = Options.GetAll(p);
-
             if (args.Length == 0)
-                Cout(ConsoleColor.Blue, true, Const.Example);
+                Terminal.Out(ConsoleColor.Blue, Const.Example);
             else if (args.Contains("/help"))
-                Options.List.ForEach(o => Cout(ConsoleColor.Yellow, true, o.ToString()));
+                Options.List.ForEach(o => Terminal.Out(ConsoleColor.Yellow, o.ToString()));
             else
             {
-                var junk = args.String().Split(
-                        options.SelectMany(x => x.Cmds).ToArray(),
-                        StringSplitOptions.RemoveEmptyEntries)
-                    .ToList()
+                var junk = args.String().Split(Terminal.Parse(args), StringSplitOptions.RemoveEmptyEntries).ToList()
                     .Append(Console.IsInputRedirected ? Console.ReadLine() : null);
 
-                Process(options, junk);
+                var verbose = Terminal.Exists(args, "v", "verbose");
+                Process(Options.GetAll(args), junk, verbose);
 
-                junk.ToList().ForEach(j => Cout(ConsoleColor.Green, true, "{0} : {1}", j, j.Length));
+                junk.ToList().ForEach(j => Terminal.Out(ConsoleColor.Green, verbose ? "{0} : {1}" : "{0}", j, j.Length));
             }
         }
 
-        private static void Cout(ConsoleColor color, bool writeLine, string format, params object[] values)
-        {
-            var c = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            if (writeLine)
-                Console.WriteLine(format, values);
-            else
-                Console.Write(format, values);
-            Console.ForegroundColor = c;
-        }
-
-        private static string GetKey(string value, string name)
-        {
-            if (!Console.IsInputRedirected)
-            {
-                Cout(ConsoleColor.DarkGray, false, "'{0}' {1} key ", value, name);
-                return Console.ReadLine();
-            }
-
-            return null;
-        }
-
-        private static string[] Parse(params string[] values)
-        {
-            return values.Select(x => @"(--|-)".ToRegex().Replace(x, "/")).ToArray();
-        }
-
-        private static void Process(IEnumerable<Param> options, IList<string> values)
+        private static void Process(IEnumerable<Param> options, IList<string> values, bool verbose)
         {
             for (var i = 0; i < values.Count; i++)
             {
                 foreach (var option in options)
                 {
+                    if (verbose && option.Type != Enums.ParamType.None)
+                        Terminal.Out(ConsoleColor.DarkBlue, "{0} '{1}'", option.Cmds.Last(), values[i]);
+
                     switch (option.Type)
                     {
                         case Enums.ParamType.Command:
@@ -81,7 +43,7 @@ namespace scrypt
                             break;
 
                         case Enums.ParamType.Crypto:
-                            var key = GetKey(values[i], option.Cmds.Last());
+                            var key = Terminal.In("'{0}' {1} key ", values[i], option.Cmds.Last());
                             values[i] = option.Method(values[i], key);
                             break;
                     }
