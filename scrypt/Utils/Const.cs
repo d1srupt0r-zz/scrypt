@@ -19,7 +19,7 @@ namespace scrypt.Utils
         {
             var name = AliasPrefix.ToRegex().Replace(value, string.Empty);
             var field = GetAll().FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
-            return field != null ? field.GetRawConstantValue().ToString() : string.Empty;
+            return field != null ? field.GetRawConstantValue().ToString() : value;
         }
     }
 }
