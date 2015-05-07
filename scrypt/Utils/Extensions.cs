@@ -1,10 +1,10 @@
-﻿using scrypt.CommandLine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using scrypt.CommandLine;
 
 namespace scrypt.Utils
 {
@@ -68,7 +68,7 @@ namespace scrypt.Utils
 
         public static bool Exists<T>(this T[] array, string pattern, params string[] values)
         {
-            var r = string.Format(values.Length > 0 ? "{0}({1})" : "{0}", pattern, string.Join(" |", values));
+            var r = string.Format(values.Length > 0 ? "{0}({1})" : "{0}", pattern, string.Join("|", values));
             return r.ToRegex().Matches(array.String()).Count > 0;
         }
 
@@ -93,6 +93,14 @@ namespace scrypt.Utils
             }
         }
 
+        public static string Hex<T>(this T value)
+        {
+            var t = value.ToString();
+            return t.All(x => Uri.IsHexDigit(x))
+                ? Encoding.ASCII.GetString(t.Slice(2).Select(x => Convert.ToByte(x, 16)).ToArray())
+                : BitConverter.ToString(Encoding.ASCII.GetBytes(t)).Replace("-", string.Empty);
+        }
+
         public static T[] Parse<T>(this T[] array, string pattern)
         {
             return array.Where(x => pattern.ToRegex().IsMatch(x.ToString())).ToArray();
@@ -108,7 +116,14 @@ namespace scrypt.Utils
             return array.Select(x => pattern.ToRegex().IsMatch(x.ToString()) ? action(x) : x).ToArray();
         }
 
-        public static IEnumerable<string> Split(this string value, int size)
+        public static string Shrink(this string value, int size = 30)
+        {
+            return value.Length > size
+                ? value.Substring(0, size) + "..."
+                : value;
+        }
+
+        public static IEnumerable<string> Slice(this string value, int size)
         {
             return value.Select(CharItems).Where(item => item.Index % size == 0)
                 .Select(item => value.Substring(item.Index, item.Index + size > value.Length

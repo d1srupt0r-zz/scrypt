@@ -1,8 +1,8 @@
-﻿using scrypt.CommandLine;
-using scrypt.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using scrypt.CommandLine;
+using scrypt.Utils;
 
 namespace scrypt
 {
@@ -14,9 +14,9 @@ namespace scrypt
                 Terminal.Out(ConsoleColor.Blue, Const.Example);
             else if (args.Exists(Const.CommandPrefix, "help"))
                 Options.List.ForEach(o => Terminal.Out(ConsoleColor.Yellow, o.ToString()));
-            else if (args.Exists(Const.CommandPrefix, "#"))
+            else if (args.Exists(Const.CommandPrefix, "#", "!"))
                 Const.GetAll().ForEach(f => Terminal.Out(ConsoleColor.DarkGreen, "{0}{1}\t{2}",
-                    "#", f.Name.ToLower(), "..."));
+                    "#", f.Name.ToLower(), f.GetRawConstantValue().ToString().Shrink()));
             else
             {
                 var junk = args.String()
@@ -47,7 +47,7 @@ namespace scrypt
                 foreach (var option in options)
                 {
                     if (verbose && option.Type != Enums.ParamType.None)
-                        Terminal.Out(ConsoleColor.DarkBlue, "{0} '{1}'", option.Cmds.Last(), values[i]);
+                        Terminal.Out(ConsoleColor.DarkBlue, "{0} '{1}'", option.Cmds.Last(), values[i].Shrink());
 
                     switch (option.Type)
                     {
@@ -57,9 +57,7 @@ namespace scrypt
                             break;
 
                         case Enums.ParamType.Crypto:
-                            var key = Terminal.In("'{0}' {1} key ", values[i].Length > 30
-                                ? values[i].Substring(0, 30) + "..."
-                                : values[i], option.Cmds.Last());
+                            var key = Terminal.In("'{0}' {1} key ", values[i].Shrink(), option.Cmds.Last());
                             values[i] = option.Method(values[i], key);
                             break;
                     }
