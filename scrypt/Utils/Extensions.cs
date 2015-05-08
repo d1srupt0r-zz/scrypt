@@ -30,6 +30,11 @@ namespace scrypt.Utils
             return value.Swap(map).String();
         }
 
+        public static string Cleanse(this string value)
+        {
+            return value.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).String("\r\n");
+        }
+
         public static string Decode<T>(this T value)
         {
             var bytes = @"[a-zA-Z0-9+/]{4}".ToRegex().IsMatch(value.ToString())
@@ -101,6 +106,12 @@ namespace scrypt.Utils
                 : BitConverter.ToString(Encoding.ASCII.GetBytes(t)).Replace("-", string.Empty);
         }
 
+        public static string Limit<T>(this T value, int size = 30)
+        {
+            var x = value is string ? value as string : value.ToString();
+            return x.Length > size ? x.Substring(0, size) + "..." : x;
+        }
+
         public static T[] Parse<T>(this T[] array, string pattern)
         {
             return array.Where(x => pattern.ToRegex().IsMatch(x.ToString())).ToArray();
@@ -114,13 +125,6 @@ namespace scrypt.Utils
         public static T[] ReplaceAll<T>(this T[] array, string pattern, Func<T, T> action)
         {
             return array.Select(x => pattern.ToRegex().IsMatch(x.ToString()) ? action(x) : x).ToArray();
-        }
-
-        public static string Shrink(this string value, int size = 30)
-        {
-            return value.Length > size
-                ? value.Substring(0, size) + "..."
-                : value;
         }
 
         public static IEnumerable<string> Slice(this string value, int size)

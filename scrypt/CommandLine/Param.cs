@@ -1,5 +1,5 @@
-﻿using scrypt.Utils;
-using System;
+﻿using System;
+using scrypt.Utils;
 
 namespace scrypt.CommandLine
 {
