@@ -135,9 +135,9 @@ namespace scrypt.Utils
                     : size));
         }
 
-        public static string String<T>(this IEnumerable<T> list, string separator = null)
+        public static string String<T>(this IEnumerable<T> values, string separator = null)
         {
-            return string.Join(separator ?? string.Empty, list);
+            return string.Join(separator ?? string.Empty, values);
         }
 
         public static IEnumerable<char> Swap(this string value, string key)
@@ -161,13 +161,6 @@ namespace scrypt.Utils
         public static Regex ToRegex(this string value)
         {
             return new Regex(@value, RegexOptions.Compiled);
-        }
-
-        public static Stack<T> ToStack<T>(this IEnumerable<T> list)
-        {
-            var stack = new Stack<T>();
-            list.ToList().ForEach(item => stack.Push(item));
-            return stack;
         }
 
         public static string Twist(this string value)

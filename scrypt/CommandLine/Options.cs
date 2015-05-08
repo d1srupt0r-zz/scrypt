@@ -1,6 +1,6 @@
-﻿using scrypt.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using scrypt.Utils;
 
 namespace scrypt.CommandLine
 {

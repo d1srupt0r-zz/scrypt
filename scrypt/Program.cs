@@ -19,7 +19,7 @@ namespace scrypt
                     "#", f.Name.ToLower(), f.GetRawConstantValue().Limit()));
             else
             {
-                try { DoWork(args); }
+                try { Process(args); }
                 catch (Exception e)
                 {
                     Terminal.Out(ConsoleColor.Red, e.Message);
@@ -30,32 +30,45 @@ namespace scrypt
             }
         }
 
-        private static void DoWork(string[] args)
+        private static void Output(IEnumerable<string> values, bool verbose)
         {
-            var options = Options.GetAll(args);
+            foreach (var value in values)
+            {
+                if (!string.IsNullOrEmpty(value))
+                    Terminal.Out(ConsoleColor.Green, verbose ? "{0} : {1}" : "{0}", value, value.Length);
+            }
+        }
+
+        private static void Process(string[] args)
+        {
             var verbose = args.Exists(Const.CommandPrefix, "verbose", "v");
-            var junk = Box(args);
-            Output(options, junk, verbose);
+            var options = Options.GetAll(args);
+            var junk = Combine(args);
+            ExecuteAll(options, junk, verbose);
+            Output(junk, verbose);
         }
 
-        private static void Output(IEnumerable<Param> options, IList<string> values, bool verbose)
+        private static IList<string> Combine(params string[] values)
         {
-            values.SelectMany(value => options.Select(option => Process(option, value, verbose)))
-                .Where(x => !string.IsNullOrEmpty(x))
-                .ToList()
-                .ForEach(x => Terminal.Out(ConsoleColor.Green, verbose ? "{0} : {1}" : "{0}", x, x.Length));
-        }
-
-        private static IList<string> Box(string[] args)
-        {
-            return args.String()
-                .Split(args.Parse(Const.CommandPrefix + @"\S+"), StringSplitOptions.RemoveEmptyEntries)
+            return values.String()
+                .Split(values.Parse(Const.CommandPrefix + @"\S+"), StringSplitOptions.RemoveEmptyEntries)
                 .ReplaceAll(Const.AliasPrefix, Const.GetValue)
                 .ToList()
                 .Append(Console.IsInputRedirected ? Console.In.ReadToEnd().Cleanse() : null);
         }
 
-        private static string Process(Param option, string value, bool verbose)
+        private static void ExecuteAll(IEnumerable<Param> options, IList<string> values, bool verbose)
+        {
+            for (int i = 0; i < values.Count; i++)
+            {
+                foreach (var option in options)
+                {
+                    values[i] = Execute(option, values[i], verbose);
+                }
+            }
+        }
+
+        private static string Execute(Param option, string value, bool verbose)
         {
             if (verbose && option.Type != Enums.ParamType.None)
                 Terminal.Out(ConsoleColor.DarkBlue, "{0} '{1}'", option.Cmds.Last(), value.Limit());
@@ -71,7 +84,7 @@ namespace scrypt
                     return option.Method(value, key);
             }
 
-            return null;
+            return value;
         }
     }
 }
