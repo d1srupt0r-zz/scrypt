@@ -1,10 +1,10 @@
-﻿using System;
+﻿using scrypt.CommandLine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using scrypt.CommandLine;
 
 namespace scrypt.Utils
 {
@@ -39,7 +39,7 @@ namespace scrypt.Utils
         {
             var bytes = @"[a-zA-Z0-9+/]{4}".ToRegex().IsMatch(value.ToString())
                 .Default(value.ToString(), Convert.FromBase64String, "Invalid Base64 string");
-            return bytes != null ? Encoding.ASCII.GetString(bytes) : value.ToString();
+            return bytes != null ? Encoding.Default.GetString(bytes) : value.ToString();
         }
 
         public static TResult Default<TResult>(this bool condition, string value, Func<string, TResult> onTrue, string message)
@@ -66,7 +66,7 @@ namespace scrypt.Utils
 
         public static string Encode<T>(this T value)
         {
-            return Convert.ToBase64String(Encoding.ASCII.GetBytes(value is Item
+            return Convert.ToBase64String(Encoding.Default.GetBytes(value is Item
                 ? (value as Item).Value
                 : value.ToString()));
         }
@@ -93,7 +93,7 @@ namespace scrypt.Utils
             {
                 var a = (algorithm != null).Default(algorithm, new SHA1Managed(), "No Hash Algorithm found, defaulting to SHA1");
                 return !string.IsNullOrEmpty(value)
-                    ? Convert.ToBase64String(a.ComputeHash(Encoding.UTF8.GetBytes(value), 0, value.Length - 1))
+                    ? Convert.ToBase64String(a.ComputeHash(Encoding.Default.GetBytes(value), 0, value.Length - 1))
                     : string.Empty;
             }
         }
@@ -102,8 +102,8 @@ namespace scrypt.Utils
         {
             var t = value.ToString();
             return t.All(x => Uri.IsHexDigit(x))
-                ? Encoding.ASCII.GetString(t.Slice(2).Select(x => Convert.ToByte(x, 16)).ToArray())
-                : BitConverter.ToString(Encoding.ASCII.GetBytes(t)).Replace("-", string.Empty);
+                ? Encoding.Default.GetString(t.Slice(2).Select(x => Convert.ToByte(x, 16)).ToArray())
+                : BitConverter.ToString(Encoding.Default.GetBytes(t)).Replace("-", string.Empty);
         }
 
         public static string Limit<T>(this T value, int size = 30)

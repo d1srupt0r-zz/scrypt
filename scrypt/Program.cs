@@ -1,8 +1,8 @@
-﻿using System;
+﻿using scrypt.CommandLine;
+using scrypt.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using scrypt.CommandLine;
-using scrypt.Utils;
 
 namespace scrypt
 {
