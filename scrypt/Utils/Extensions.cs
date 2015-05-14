@@ -100,10 +100,20 @@ namespace scrypt.Utils
 
         public static string Hex<T>(this T value)
         {
-            var t = value.ToString();
-            return t.All(x => Uri.IsHexDigit(x))
-                ? Encoding.Default.GetString(t.Slice(2).Select(x => Convert.ToByte(x, 16)).ToArray())
-                : BitConverter.ToString(Encoding.Default.GetBytes(t)).Replace("-", string.Empty);
+            var val = value.ToString();
+            return val.All(x => Uri.IsHexDigit(x))
+                ? val.FromHex().String()
+                : BitConverter.ToString(Encoding.Default.GetBytes(val)).Replace("-", string.Empty);
+        }
+
+        public static IEnumerable<char> FromHex<T>(this T value)
+        {
+            var val = value.ToString();
+            for (int i = 0; i < val.Length; i += 2)
+            {
+                var hs = val.Substring(i, 2);
+                yield return Convert.ToChar(Convert.ToUInt32(hs, 16));
+            }
         }
 
         public static string Limit<T>(this T value, int size = 30)
