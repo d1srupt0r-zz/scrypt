@@ -1,10 +1,10 @@
-﻿using scrypt.CommandLine;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using scrypt.CommandLine;
 
 namespace scrypt.Utils
 {
@@ -82,11 +82,6 @@ namespace scrypt.Utils
             return value.Reverse().String();
         }
 
-        public static T Get<T>(this IList<T> list, int index) where T : class
-        {
-            return index > -1 && list.Count > index ? list[index] : default(T);
-        }
-
         public static string Hash(this string value, string type = null)
         {
             using (var algorithm = HashAlgorithm.Create(type ?? string.Empty))
@@ -102,11 +97,11 @@ namespace scrypt.Utils
         {
             var val = value.ToString();
             return val.All(x => Uri.IsHexDigit(x))
-                ? val.FromHex().String()
+                ? val.HexString().String()
                 : BitConverter.ToString(Encoding.Default.GetBytes(val)).Replace("-", string.Empty);
         }
 
-        public static IEnumerable<char> FromHex<T>(this T value)
+        public static IEnumerable<char> HexString<T>(this T value)
         {
             var val = value.ToString();
             for (int i = 0; i < val.Length; i += 2)
@@ -114,6 +109,11 @@ namespace scrypt.Utils
                 var hs = val.Substring(i, 2);
                 yield return Convert.ToChar(Convert.ToUInt32(hs, 16));
             }
+        }
+
+        public static string Ignore<T>(this T value, params char[] ingore)
+        {
+            return value.ToString().Where(x => !ingore.Contains(x)).String();
         }
 
         public static string Limit<T>(this T value, int size = 30)

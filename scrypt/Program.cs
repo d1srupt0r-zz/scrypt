@@ -1,8 +1,8 @@
-﻿using scrypt.CommandLine;
-using scrypt.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using scrypt.CommandLine;
+using scrypt.Utils;
 
 namespace scrypt
 {
@@ -70,18 +70,19 @@ namespace scrypt
 
         private static string Execute(Param option, string value, bool verbose)
         {
-            if (verbose && option.Type != Enums.ParamType.None)
-                Terminal.Out(ConsoleColor.DarkBlue, "{0} '{1}'", option.Cmds.Last(), value.Limit());
-
             switch (option.Type)
             {
                 case Enums.ParamType.Command:
                 case Enums.ParamType.Trigger:
-                    return option.Method(value, null);
+                    return verbose
+                        ? option.Verbose(value, null)
+                        : option.Method(value, null);
 
                 case Enums.ParamType.Crypto:
                     var key = Terminal.In("'{0}' {1} key ", value.Limit(), option.Cmds.Last());
-                    return option.Method(value, key);
+                    return verbose
+                        ? option.Verbose(value, key)
+                        : option.Method(value, key);
             }
 
             return value;

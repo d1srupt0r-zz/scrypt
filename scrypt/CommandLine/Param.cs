@@ -22,13 +22,6 @@ namespace scrypt.CommandLine
             Help = help;
         }
 
-        public Param(string[] cmds, Func<string, string, string> method, string help)
-        {
-            Cmds = cmds;
-            Method = method;
-            Help = help;
-        }
-
         public Param(short order, string[] cmds, Func<string, string, string> method, string help, Enums.ParamType type)
         {
             Order = order;
@@ -41,6 +34,16 @@ namespace scrypt.CommandLine
         public override string ToString()
         {
             return string.Format("{0}\t{1}", Cmds.String(" ").PadRight(10), Help);
+        }
+
+        public string Verbose(string x, string k)
+        {
+            var timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+            var result = Method.Invoke(x, k);
+            timer.Stop();
+            Terminal.Out(ConsoleColor.DarkBlue, "{0} '{1}' ({2})", Cmds[Cmds.Length - 1], x.Limit(), timer.Elapsed.Ignore('0', ':'));
+            return result;
         }
     }
 }
