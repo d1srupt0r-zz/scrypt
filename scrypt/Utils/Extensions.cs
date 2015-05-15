@@ -48,7 +48,7 @@ namespace scrypt.Utils
                 return onTrue(value);
             else
             {
-                Terminal.Out(ConsoleColor.DarkRed, message);
+                Terminal.Out(Theme.Warning, message);
                 return default(TResult);
             }
         }
@@ -59,7 +59,7 @@ namespace scrypt.Utils
                 return trueValue;
             else
             {
-                Terminal.Out(ConsoleColor.DarkRed, message);
+                Terminal.Out(Theme.Warning, message);
                 return falseValue;
             }
         }

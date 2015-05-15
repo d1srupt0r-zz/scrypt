@@ -44,6 +44,7 @@
     <Compile Include="CommandLine\Terminal.cs" />
     <Compile Include="CommandLine\Options.cs" />
     <Compile Include="CommandLine\Param.cs" />
+    <Compile Include="CommandLine\Theme.cs" />
     <Compile Include="Utils\Const.cs" />
     <Compile Include="Utils\Item.cs" />
     <Compile Include="Program.cs" />

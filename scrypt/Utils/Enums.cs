@@ -12,9 +12,9 @@ namespace scrypt.Utils
             Crypto
         }
 
-        public static T GetEnumValue<T>(string value)
+        public static T GetEnumValue<T>(object value)
         {
-            return Enum.IsDefined(typeof(T), value) ? (T)Enum.Parse(typeof(T), value) : default(T);
+            return Enum.IsDefined(typeof(T), value) ? (T)Enum.Parse(typeof(T), value.ToString()) : default(T);
         }
     }
 }

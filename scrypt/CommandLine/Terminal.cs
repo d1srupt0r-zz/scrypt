@@ -17,7 +17,7 @@ namespace scrypt.CommandLine
         {
             if (!Console.IsInputRedirected)
             {
-                Out(ConsoleColor.DarkGray, false, format, args);
+                Out(Theme.Input, false, format, args);
                 return Console.ReadLine();
             }
 
@@ -31,13 +31,14 @@ namespace scrypt.CommandLine
 
         public static void Out(ConsoleColor color, bool writeLine, string format, params object[] args)
         {
-            var oldColor = Console.ForegroundColor;
             Console.ForegroundColor = color;
+
             if (writeLine)
                 Console.WriteLine(format, args);
             else
                 Console.Write(format, args);
-            Console.ForegroundColor = oldColor;
+
+            Console.ResetColor();
         }
     }
 }
