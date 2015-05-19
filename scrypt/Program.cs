@@ -11,20 +11,20 @@ namespace scrypt
         public static void Main(string[] args)
         {
             if (args.Length == 0)
-                Terminal.Out(Theme.Default, Const.Example);
+                Terminal.Out(Terminal.Theme.Default, Const.Example);
             else if (args.Exists(Const.CommandPrefix, "help"))
-                Options.List.ForEach(o => Terminal.Out(Theme.Help, o.ToString()));
+                Options.List.ForEach(o => Terminal.Out(Terminal.Theme.Help, o.ToString()));
             else if (args.Exists(Const.CommandPrefix, "#", "!"))
-                Const.GetAll().ForEach(f => Terminal.Out(Theme.Alias, "{0}{1}\t{2}",
+                Const.GetAll().ForEach(f => Terminal.Out(Terminal.Theme.Alias, "{0}{1}\t{2}",
                     "#", f.Name.ToLower(), f.GetRawConstantValue().Limit()));
             else
             {
                 try { Process(args); }
                 catch (Exception e)
                 {
-                    Terminal.Out(Theme.Error, e.Message);
+                    Terminal.Out(Terminal.Theme.Error, e.Message);
 #if DEBUG
-                    Terminal.Out(Theme.Input, e.StackTrace);
+                    Terminal.Out(Terminal.Theme.Input, e.StackTrace);
 #endif
                 }
             }
@@ -35,7 +35,7 @@ namespace scrypt
             foreach (var value in values)
             {
                 if (!string.IsNullOrEmpty(value))
-                    Terminal.Out(Theme.Output, verbose ? "{0} : {1}" : "{0}", value, value.Length);
+                    Terminal.Out(Terminal.Theme.Output, verbose ? "{0} : {1}" : "{0}", value, value.Length);
             }
         }
 

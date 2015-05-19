@@ -42,7 +42,7 @@ namespace scrypt.CommandLine
             timer.Start();
             var result = Method.Invoke(x, k);
             timer.Stop();
-            Terminal.Out(Theme.Verbose, "{0} '{1}' ({2})", Cmds[Cmds.Length - 1], x.Limit(), timer.Elapsed.Ignore('0', ':'));
+            Terminal.Out(Terminal.Theme.Verbose, "{0} '{1}' ({2})", Cmds[Cmds.Length - 1], x.Limit(), timer.Elapsed.Ignore('0', ':'));
             return result;
         }
     }

@@ -1,56 +1,59 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using scrypt.Utils;
 
 namespace scrypt.CommandLine
 {
     public class Theme
     {
-        private static ConsoleColor FixColor(ConsoleColor color)
+        public ConsoleColor Alias { get; set; }
+
+        public ConsoleColor Default { get; set; }
+
+        public ConsoleColor Error { get; set; }
+
+        public ConsoleColor Help { get; set; }
+
+        public ConsoleColor Input { get; set; }
+
+        public string Name { get; set; }
+
+        public ConsoleColor Output { get; set; }
+
+        public ConsoleColor Verbose { get; set; }
+
+        public ConsoleColor Warning { get; set; }
+
+        public override string ToString()
         {
-            var dark = new[] { ConsoleColor.Black, ConsoleColor.Gray, ConsoleColor.DarkGray }
-                .Contains(Console.BackgroundColor);
-            return dark ? color : Enums.GetEnumValue<ConsoleColor>((int)color % 7);
+            var colors = string.Join(",", new[] { Alias, Default, Error, Help, Input, Output, Verbose, Warning });
+            return string.Format("{0}: [{1}]", Name, colors);
         }
 
-        public static ConsoleColor Alias
+        public Theme()
         {
-            get { return FixColor(ConsoleColor.DarkGreen); }
+            Name = "Dark";
+            Alias = ConsoleColor.DarkGreen;
+            Default = ConsoleColor.Blue;
+            Error = ConsoleColor.Red;
+            Help = ConsoleColor.Yellow;
+            Input = ConsoleColor.DarkGray;
+            Output = ConsoleColor.Green;
+            Verbose = ConsoleColor.DarkBlue;
+            Warning = ConsoleColor.DarkMagenta;
         }
+    }
 
-        public static ConsoleColor Default
-        {
-            get { return FixColor(ConsoleColor.Blue); }
-        }
+    public class Themes
+    {
+        public static List<Theme> List = new List<Theme> {
+            new Theme()
+            ,new Theme { Name = "Light", Default = ConsoleColor.DarkCyan, Input = ConsoleColor.Gray, Verbose = ConsoleColor.DarkGray, Warning = ConsoleColor.Magenta }
+        };
 
-        public static ConsoleColor Error
+        public static Theme Find(string name)
         {
-            get { return FixColor(ConsoleColor.Red); }
-        }
-
-        public static ConsoleColor Help
-        {
-            get { return FixColor(ConsoleColor.Yellow); }
-        }
-
-        public static ConsoleColor Input
-        {
-            get { return FixColor(ConsoleColor.DarkGray); }
-        }
-
-        public static ConsoleColor Output
-        {
-            get { return FixColor(ConsoleColor.Green); }
-        }
-
-        public static ConsoleColor Verbose
-        {
-            get { return FixColor(ConsoleColor.DarkBlue); }
-        }
-
-        public static ConsoleColor Warning
-        {
-            get { return FixColor(ConsoleColor.DarkRed); }
+            return List.FirstOrDefault(x => x.Name == name);
         }
     }
 }

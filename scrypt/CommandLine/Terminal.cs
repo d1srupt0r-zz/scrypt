@@ -4,6 +4,16 @@ namespace scrypt.CommandLine
 {
     public class Terminal
     {
+        public static Theme Theme
+        {
+            get
+            {
+                return Console.BackgroundColor == ConsoleColor.Black
+                  ? Themes.Find("Dark")
+                  : Themes.Find("Light");
+            }
+        }
+
         public static ConsoleColor RandomColor
         {
             get
