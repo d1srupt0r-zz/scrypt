@@ -71,10 +71,9 @@ namespace scrypt.Utils
                 : value.ToString()));
         }
 
-        public static bool Exists<T>(this T[] array, string pattern, params string[] values)
+        public static bool Exists(this IEnumerable<Param> list, string value)
         {
-            var r = string.Format(values.Length > 0 ? "{0}({1})" : "{0}", pattern, string.Join("|", values));
-            return r.ToRegex().Matches(array.String()).Count > 0;
+            return list.Any(x => x.Cmds.Contains(value));
         }
 
         public static string Flip(this string value)

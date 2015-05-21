@@ -6,11 +6,11 @@ namespace scrypt.CommandLine
 {
     public class Options
     {
-        public static List<Option> List = new List<Option> {
-            new Option(new [] { "/help" }, "Display [h]elp", Enums.ParamType.Trigger)
-            ,new Option(new [] { "/#", "/!" }, "Display list of aliases", Enums.ParamType.Trigger)
-            ,new Option(new [] { "/theme" }, "Display the current theme", Enums.ParamType.Trigger)
-            ,new Option(new [] { "/v", "/verbose" }, "Display [v]erbose output", Enums.ParamType.Trigger)
+        public List<Param> List = new List<Param> {
+            new Param(new [] { "/help" }, "Display [h]elp")
+            ,new Param(new [] { "/#", "/!" }, "Display list of aliases")
+            ,new Param(new [] { "/theme" }, "Display the current theme")
+            ,new Param(new [] { "/v", "/verbose" }, "Display [v]erbose output", Enums.ParamType.Trigger)
             ,new Param(1, new [] { "/e", "/encode" }, (x, k) => x.Encode(), "Base64 [e]ncode text", Enums.ParamType.Command)
             ,new Param(2, new [] { "/d", "/decode" }, (x, k) => x.Decode(), "Base64 [d]ecode text", Enums.ParamType.Command)
             ,new Param(3, new [] { "/f", "/flip" }, (x, k) => x.Flip(), "Execute character [f]lip on text", Enums.ParamType.Command)
@@ -20,27 +20,22 @@ namespace scrypt.CommandLine
             ,new Param(7, new [] { "/h", "/hash" }, (x, k) => x.Hash(k), "Execute [h]ash algorithm on text (default sha1)", Enums.ParamType.Crypto)
         };
 
-        public static T GetValue<T>(Param value)
+        // TODO: Make this lazy load based on some form of command list...
+        public bool Verbose { get; set; }
+
+        public IEnumerable<Param> GetAll(params string[] args)
         {
-            /*Terminal.OutIf(args.Length == 0, Terminal.Theme.Default, Const.Example);
-            Terminal.OutIf(args.Exists(Const.CommandPrefix, "help"), Terminal.Theme.Help, Options.List);
-            Terminal.OutIf(args.Exists(Const.CommandPrefix, "theme"), Terminal.RandomColor, Terminal.Theme);
-            Terminal.OutIf(args.Exists(Const.CommandPrefix, "#", "!"), Terminal.Theme.Alias, Const.GetAll());*/
-
-            switch (value.Cmds[value.Cmds.Length - 1])
-            {
-                case "/help":
-                    break;
-            }
-
-            return default(T);
-        }
-
-        public static IEnumerable<Option> GetAll(params string[] args)
-        {
+            // TODO: Possibly store this in a local variable...
+            //       call it 'parse_command_line' or something
             return args.ReplaceAll(@"(--|-)", "/")
                 .SelectMany(value => List.Where(param => param.Cmds.Contains(value)))
                 .OrderBy(o => o.Order);
+        }
+
+        public override string ToString()
+        {
+            // TODO: Output list of as string for help display?
+            return string.Empty;
         }
     }
 }
