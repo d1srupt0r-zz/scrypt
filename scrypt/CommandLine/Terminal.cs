@@ -1,9 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using scrypt.Utils;
 
 namespace scrypt.CommandLine
 {
     public class Terminal
     {
+        public static ConsoleColor RandomColor
+        {
+            get
+            {
+                var r = new Random(Environment.TickCount).Next(14) + 1;
+                return ((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor)))[r];
+            }
+        }
+
         public static Theme Theme
         {
             get
@@ -11,15 +22,6 @@ namespace scrypt.CommandLine
                 return Console.BackgroundColor == ConsoleColor.Black
                   ? Themes.Find("Dark")
                   : Themes.Find("Light");
-            }
-        }
-
-        public static ConsoleColor RandomColor
-        {
-            get
-            {
-                var r = new Random(Environment.TickCount).Next(14) + 1;
-                return ((ConsoleColor[])Enum.GetValues(typeof(ConsoleColor)))[r];
             }
         }
 
@@ -32,6 +34,21 @@ namespace scrypt.CommandLine
             }
 
             return null;
+        }
+
+        public static void Out(Theme value)
+        {
+            value.Colors().ForEach(x => Out(x, "{0}", (int)x));
+        }
+
+        public static void Out(ConsoleColor color, List<System.Reflection.FieldInfo> list)
+        {
+            list.ForEach(x => Out(color, "{0}{1}\t{2}", "#", x.Name.ToLower(), x.GetRawConstantValue().Limit()));
+        }
+
+        public static void Out<T>(ConsoleColor color, List<T> list)
+        {
+            list.ForEach(x => Out(color, "{0}", x.ToString()));
         }
 
         public static void Out(ConsoleColor color, string format, params object[] args)

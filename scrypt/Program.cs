@@ -10,23 +10,13 @@ namespace scrypt
     {
         public static void Main(string[] args)
         {
-            if (args.Length == 0)
-                Terminal.Out(Terminal.Theme.Default, Const.Example);
-            else if (args.Exists(Const.CommandPrefix, "help"))
-                Options.List.ForEach(o => Terminal.Out(Terminal.Theme.Help, o.ToString()));
-            else if (args.Exists(Const.CommandPrefix, "#", "!"))
-                Const.GetAll().ForEach(f => Terminal.Out(Terminal.Theme.Alias, "{0}{1}\t{2}",
-                    "#", f.Name.ToLower(), f.GetRawConstantValue().Limit()));
-            else
+            try { Process(args); }
+            catch (Exception e)
             {
-                try { Process(args); }
-                catch (Exception e)
-                {
-                    Terminal.Out(Terminal.Theme.Error, e.Message);
+                Terminal.Out(Terminal.Theme.Error, e.Message);
 #if DEBUG
-                    Terminal.Out(Terminal.Theme.Input, e.StackTrace);
+                Terminal.Out(Terminal.Theme.Input, e.StackTrace);
 #endif
-                }
             }
         }
 
@@ -57,13 +47,14 @@ namespace scrypt
                 .Append(Console.IsInputRedirected ? Console.In.ReadToEnd().Cleanse() : null);
         }
 
-        private static void ExecuteAll(IEnumerable<Param> options, IList<string> values, bool verbose)
+        private static void ExecuteAll(IEnumerable<Option> options, IList<string> values, bool verbose)
         {
             for (int i = 0; i < values.Count; i++)
             {
                 foreach (var option in options)
                 {
-                    values[i] = Execute(option, values[i], verbose);
+                    if (option is Param)
+                        values[i] = Execute(option as Param, values[i], verbose);
                 }
             }
         }
@@ -73,7 +64,6 @@ namespace scrypt
             switch (option.Type)
             {
                 case Enums.ParamType.Command:
-                case Enums.ParamType.Trigger:
                     return verbose
                         ? option.Verbose(value, null)
                         : option.Method(value, null);

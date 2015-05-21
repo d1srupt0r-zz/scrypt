@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLine\Option.cs" />
     <Compile Include="CommandLine\Terminal.cs" />
     <Compile Include="CommandLine\Options.cs" />
     <Compile Include="CommandLine\Param.cs" />

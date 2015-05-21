@@ -24,12 +24,6 @@ namespace scrypt.CommandLine
 
         public ConsoleColor Warning { get; set; }
 
-        public override string ToString()
-        {
-            var colors = string.Join(",", new[] { Alias, Default, Error, Help, Input, Output, Verbose, Warning });
-            return string.Format("{0}: [{1}]", Name, colors);
-        }
-
         public Theme()
         {
             Name = "Dark";
@@ -41,6 +35,11 @@ namespace scrypt.CommandLine
             Output = ConsoleColor.Green;
             Verbose = ConsoleColor.DarkBlue;
             Warning = ConsoleColor.DarkMagenta;
+        }
+
+        public List<ConsoleColor> Colors()
+        {
+            return new[] { Alias, Default, Error, Help, Input, Output, Verbose, Warning }.ToList();
         }
     }
 
